@@ -3,7 +3,7 @@ from flask_cors import CORS
 import re
 import logging, os
 from decimal import Decimal
-import db_handler, function_handler
+from . import db_handler, function_handler
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
