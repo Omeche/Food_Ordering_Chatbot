@@ -1,2 +1,3 @@
-web: gunicorn backend.main:app
+web: PYTHONPATH=app gunicorn backend.main:app
+
 
