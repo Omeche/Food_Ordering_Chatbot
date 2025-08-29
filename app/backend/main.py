@@ -428,9 +428,3 @@ def cancel_order(parameters: dict, session_id: str):
     message = db_handler.clear_order(order_id)
     return jsonify({"fulfillmentText": message})
 
-# This is what Elastic Beanstalk looks for
-application = app
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))  # use EB-assigned port, fallback 5000
-    app.run(debug=True, host="0.0.0.0", port=port)
