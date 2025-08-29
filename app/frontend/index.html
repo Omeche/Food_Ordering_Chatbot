@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TheoEats - Order Online</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+  <style>
+    /* Global */
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #0f2027, #203a43, #2c5364);
+      color: #eee;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* Header */
+    header {
+      background: linear-gradient(270deg, #25d366, #128C7E, #075E54);
+      background-size: 400% 400%;
+      animation: gradientFlow 10s ease infinite;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+    }
+    @keyframes gradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    header h1 { margin: 0; font-size: 1.5rem; font-weight: 700; }
+    nav a {
+      color: white; margin-left: 15px; text-decoration: none;
+      font-weight: bold; transition: opacity 0.3s;
+    }
+    nav a:hover { opacity: 0.7; }
+
+    section { padding: 40px 20px; max-width: 1100px; margin: auto; }
+    h2 { text-align: center; margin-bottom: 25px; font-size: 1.8rem; color: #25d366; }
+
+    /* Menu grid */
+    .menu-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 20px;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 15px;
+      padding: 15px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+      transition: transform 0.3s, box-shadow 0.3s;
+      backdrop-filter: blur(6px);
+    }
+    .card:hover { transform: translateY(-6px); box-shadow: 0 10px 25px rgba(0,0,0,0.6); }
+    .card img { width: 100%; height: 160px; object-fit: cover; border-radius: 12px; margin-bottom: 8px; }
+    .card h3 { margin: 8px 0 5px; font-size: 1.1rem; font-weight: 700; color: #25d366; }
+    .card p { margin: 5px 0; font-weight: bold; color: #34b7f1; font-size: 1rem; }
+
+    footer { text-align: center; padding: 15px; background: #075E54; color: white; font-size: 0.85rem; margin-top: 40px; }
+
+    /* Chatbot Theme */
+    df-messenger {
+      --df-messenger-bot-message: #075E54;
+      --df-messenger-user-message: #25d366;
+      --df-messenger-font-color: white;
+      --df-messenger-button-titlebar-color: #128C7E;
+      --df-messenger-chat-background-color: #1e1e1e;
+      --df-messenger-send-icon: #25d366;
+      position: fixed;
+      bottom: 0; right: 20px; z-index: 999;
+
+      width: 300px !important;
+      height: 400px !important; /* shorter height */
+    }
+    df-messenger::part(button) {
+      background: linear-gradient(270deg, #25d366, #128C7E, #34b7f1);
+      background-size: 400% 400%;
+      animation: gradientFlow 6s ease infinite;
+      border-radius: 50% !important;
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <h1>TheoEats</h1>
+    <nav>
+      <a href="#menu">Menu</a>
+      <a href="cart.html">My Cart</a>
+      <a href="#contact">Contact</a>
+    </nav>
+  </header>
+
+  <!-- Menu -->
+  <section id="menu">
+    <h2>Our Menu</h2>
+    <div class="menu-grid" id="menu-grid"></div>
+  </section>
+
+  <!-- Contact -->
+  <section id="contact">
+    <h2>Contact Us</h2>
+    <p>📞 +234 791234567 | 📧 support@theoeats.com</p>
+  </section>
+
+  <footer>
+    <p>&copy; 2025 TheoEats. All Rights Reserved.</p>
+  </footer>
+
+  <!-- Chatbot -->
+  <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+  <df-messenger
+    intent="WELCOME"
+    chat-title="TheoBot"
+    agent-id="e1af3028-ec3a-4d28-955a-6b1823e750fd"
+    language-code="en">
+  </df-messenger>
+
+  <!-- JS -->
+  <script>
+    const menu = [
+      { name: "Jollof Rice", price: 800, img: "jollof-rice.jpg" },
+      { name: "Porridge Beans", price: 700, img: "beans-porridge.jpg" },
+      { name: "Plantain", price: 400, img: "plantain.jpg" },
+      { name: "Fish", price: 1200, img: "fish.jpg" },
+      { name: "Beef", price: 1500, img: "beef.jpg" },
+      { name: "Fried Egg", price: 300, img: "fried egg.jpg" },
+      { name: "White Rice", price: 700, img: "white-rice.jpg" }
+    ];
+
+    // Render menu
+    const grid = document.getElementById("menu-grid");
+    menu.forEach(item => {
+      const div = document.createElement("div");
+      div.classList.add("card");
+      div.innerHTML = `
+        <img src="${item.img}" alt="${item.name}">
+        <h3>${item.name}</h3>
+        <p>₦${item.price}</p>
+      `;
+      grid.appendChild(div);
+    });
+
+    // Save order updates in localStorage so cart.html can read
+    const messenger = document.querySelector('df-messenger');
+    messenger.addEventListener('df-response-received', function(event) {
+      const res = event.detail.response.queryResult;
+      if (!res) return;
+      const txt = res.fulfillmentText || "";
+
+      if (
+        txt.includes("Order updated") || txt.includes("Order cancelled") ||
+        txt.includes("Order completed") || txt.includes("Order placed") ||
+        txt.includes("Your Order ID")
+      ) {
+        const itemsMatch = txt.match(/Current items: (.+?)\. Total: ₦(\d+)/);
+        if (!itemsMatch) {
+          localStorage.setItem("order", JSON.stringify({ items: [], total: 0 }));
+          return;
+        }
+        const itemsStr = itemsMatch[1];
+        const total = itemsMatch[2];
+        const items = itemsStr.split(", ").map(x => x.trim());
+        localStorage.setItem("order", JSON.stringify({ items, total }));
+      }
+    });
+  </script>
+</body>
+</html>

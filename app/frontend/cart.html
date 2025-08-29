@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>My Cart - TheoEats</title>
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: #f9f9f9;
+      color: #333;
+    }
+    header {
+      background: #128C7E;
+      color: white;
+      padding: 15px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    header a { color: white; text-decoration: none; font-weight: bold; }
+    h2 { text-align: center; margin: 20px 0; }
+    .cart-container { max-width: 900px; margin: auto; padding: 20px; }
+    .cart-item {
+      display: flex; align-items: center; justify-content: space-between;
+      background: white; border-radius: 10px; margin-bottom: 15px;
+      padding: 10px 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    }
+    .cart-item img { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; }
+    .cart-info { flex: 1; margin-left: 15px; }
+    .cart-info h3 { margin: 0; font-size: 1.1rem; }
+    .cart-info p { margin: 3px 0; }
+    .cart-price { font-weight: bold; color: #128C7E; }
+    .total { text-align: right; font-size: 1.3rem; font-weight: bold; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>My Cart</h1>
+    <a href="index.html">← Back to Menu</a>
+  </header>
+
+  <h2>Order Summary</h2>
+  <div class="cart-container" id="cart"></div>
+  <p class="total" id="cart-total">Total: ₦0</p>
+
+  <script>
+    const menu = {
+      "Jollof Rice": { price: 800, img: "jollof-rice.jpg" },
+      "Porridge Beans": { price: 700, img: "beans-porridge.jpg" },
+      "Plantain": { price: 400, img: "plantain.jpg" },
+      "Fish": { price: 1200, img: "fish.jpg" },
+      "Beef": { price: 1500, img: "beef.jpg" },
+      "Fried Egg": { price: 300, img: "fried egg.jpg" },
+      "White Rice": { price: 700, img: "white-rice.jpg" }
+    };
+
+    const cartDiv = document.getElementById("cart");
+    const totalDiv = document.getElementById("cart-total");
+    const order = JSON.parse(localStorage.getItem("order")) || { items: [], total: 0 };
+
+    cartDiv.innerHTML = "";
+    order.items.forEach(entry => {
+      const match = entry.match(/(.+)\((\d+)\)/); // e.g. Fish(2)
+      if (!match) return;
+      const name = match[1].trim();
+      const qty = parseInt(match[2]);
+      const item = menu[name];
+      if (!item) return;
+
+      const div = document.createElement("div");
+      div.classList.add("cart-item");
+      div.innerHTML = `
+        <img src="${item.img}" alt="${name}">
+        <div class="cart-info">
+          <h3>${name}</h3>
+          <p>Qty: ${qty}</p>
+        </div>
+        <div class="cart-price">₦${item.price * qty}</div>
+      `;
+      cartDiv.appendChild(div);
+    });
+
+    totalDiv.textContent = `Total: ₦${order.total}`;
+  </script>
+</body>
+</html>
