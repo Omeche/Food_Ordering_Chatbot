@@ -1,6 +1,6 @@
 import mysql.connector
 from decimal import Decimal
-import logging
+import logging, os
 from typing import Dict, List, Optional, Any
 
 # Configure logging
@@ -11,20 +11,35 @@ logger = logging.getLogger(__name__)
 def get_connection():
     # Get database connection with proper error handling
     try:
-        conn = mysql.connector.connect(
+        # Switch automatically between local dev and Railway deployment
+        if os.environ.get("RAILWAY_ENV") == "production":
+            host = os.environ.get("RAILWAY_PRIVATE_DOMAIN")  # Railway private endpoint
+            user = os.environ.get("MYSQLUSER")
+            password = os.environ.get("MYSQLPASSWORD")
+            database = os.environ.get("MYSQLDATABASE")
+            port = int(os.environ.get("MYSQLPORT"))
+        else:
+            # Local dev
             host="127.0.0.1",
             user="root",
             password="theo",
-            database="theo_eat",
+            database="theo_eat"
+    
+        return mysql.connector.connect(
+            host=host,
+            user=user,
+            password=password,
+            database=database,
+            port=port,
             auth_plugin="mysql_native_password",
-            autocommit=False,  
-            charset='utf8mb4',
-            use_unicode=True
+            autocommit=True,
+            charset='utf8mb4'
         )
-        return conn
+
     except mysql.connector.Error as e:
         logger.error(f"Database connection error: {e}")
         raise
+
 
 # Order Status 
 def get_order_status(order_id: int) -> Optional[str]:
