@@ -4,7 +4,16 @@ import re
 import logging, os
 from decimal import Decimal
 from . import db_handler, function_handler
+from init_db import initialize_database
 
+
+# Initialize database on first run (only in production)
+if os.environ.get("RAILWAY_ENV") == "production":
+    try:
+        initialize_database()
+    except Exception as e:
+        print(f"Database initialization failed: {e}")
+        
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
