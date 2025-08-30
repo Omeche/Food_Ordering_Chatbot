@@ -1,6 +1,9 @@
 import os
 import mysql.connector
 import logging
+import sys
+
+print(">>> mysql_import.py started", file=sys.stderr)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -74,3 +77,5 @@ def import_sql_file(sql_file_path):
 
 if __name__ == '__main__':
     import_sql_file(SQL_FILE_PATH)
+
+print(">>> mysql_import.py finished", file=sys.stderr)
