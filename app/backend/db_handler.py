@@ -9,16 +9,17 @@ logger = logging.getLogger(__name__)
 
 # Connection 
 def get_connection():
+    # Get database connection with proper error handling
     try:
         # Switch automatically between local dev and Railway deployment
-        if os.environ.get("RAILWAY_ENV") == "production":
-            host = os.environ.get("MYSQLHOST")  
-            user = os.environ.get("MYSQLUSER")
+        if os.environ.get("RAILWAY_ENVIRONMENT"):  # Railway sets this automatically
+            host = os.environ.get("MYSQLHOST")
+            user = os.environ.get("MYSQLUSER") 
             password = os.environ.get("MYSQLPASSWORD")
             database = os.environ.get("MYSQLDATABASE")
             port = int(os.environ.get("MYSQLPORT", 3306))
         else:
-            # Local dev - fix the syntax error
+            # Local dev 
             host = "127.0.0.1"
             user = "root"
             password = "theo"
@@ -39,7 +40,6 @@ def get_connection():
     except mysql.connector.Error as e:
         logger.error(f"Database connection error: {e}")
         raise
-
 
 # Order Status 
 def get_order_status(order_id: int) -> Optional[str]:
