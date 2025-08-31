@@ -11,17 +11,47 @@ from urllib.parse import urlparse
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+# Debug environment variables
+logger.info("Checking environment variables...")
+mysql_url = os.environ.get("MYSQL_URL")
+logger.info(f"MYSQL_URL: {'Available' if mysql_url else 'Not set'}")
+
+# Also check individual MySQL variables
+mysql_vars = {
+    'RAILWAY_ENVIRONMENT': os.environ.get("RAILWAY_ENVIRONMENT"),
+    'MYSQLHOST': os.environ.get("MYSQLHOST"),
+    'MYSQLUSER': os.environ.get("MYSQLUSER"),
+    'MYSQLDATABASE': os.environ.get("MYSQLDATABASE"),
+    'MYSQLPORT': os.environ.get("MYSQLPORT")
+}
+
+for var, value in mysql_vars.items():
+    if var == 'MYSQLPASSWORD':
+        logger.info(f"{var}: {'*' * len(value) if value else 'None'}")
+    else:
+        logger.info(f"{var}: {value}")
+
 # Initialize database on startup (only in production)
 if os.environ.get("RAILWAY_ENVIRONMENT"):
     logger.info("Railway environment detected. Initializing database...")
-    try:
-        db_init_success = init_db.initialize_database()
-        if db_init_success:
-            logger.info("Database initialization completed successfully")
-        else:
-            logger.error("Database initialization failed")
-    except Exception as e:
-        logger.error(f"Database initialization error: {e}")
+    
+    # Check if we have either MYSQL_URL or individual variables
+    has_mysql_url = bool(os.environ.get("MYSQL_URL"))
+    required_vars = ['MYSQLHOST', 'MYSQLUSER', 'MYSQLPASSWORD', 'MYSQLDATABASE']
+    has_individual_vars = all(os.environ.get(var) for var in required_vars)
+    
+    if not (has_mysql_url or has_individual_vars):
+        logger.error("No MySQL connection information found!")
+        logger.error("Please set MYSQL_URL variable in Railway or ensure MySQL service is connected")
+    else:
+        try:
+            db_init_success = initialize_database()
+            if db_init_success:
+                logger.info("Database initialization completed successfully")
+            else:
+                logger.error("Database initialization failed")
+        except Exception as e:
+            logger.error(f"Database initialization error: {e}")
 else:
     logger.info("Local environment detected. Skipping auto-initialization")
 
