@@ -1,6 +1,7 @@
 import mysql.connector
 import os
 import logging
+from urllib.parse import urlparse
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -8,13 +9,40 @@ logger = logging.getLogger(__name__)
 def get_db_connection():
     # Get database connection for initialization
     try:
-        if os.environ.get("RAILWAY_ENVIRONMENT"):
-            # Railway production
+        # Check for Railway's MYSQL_URL first
+        mysql_url = os.environ.get("MYSQL_URL")
+        
+        if mysql_url:
+            # Parse Railway's MYSQL_URL format: mysql://user:password@host:port/database
+            from urllib.parse import urlparse
+            parsed = urlparse(mysql_url)
+            
+            host = parsed.hostname
+            user = parsed.username
+            password = parsed.password
+            database = parsed.path[1:]  # Remove leading slash
+            port = parsed.port or 3306
+            
+            logger.info(f"Using Railway MySQL URL connection to {host}:{port}")
+            
+        elif os.environ.get("RAILWAY_ENVIRONMENT"):
+            # Fallback to individual variables if they exist
             host = os.environ.get("MYSQLHOST")
             user = os.environ.get("MYSQLUSER")
             password = os.environ.get("MYSQLPASSWORD")
             database = os.environ.get("MYSQLDATABASE")
-            port = int(os.environ.get("MYSQLPORT", 3306))
+            port_str = os.environ.get("MYSQLPORT", "3306")
+            
+            # Validate all environment variables are present
+            if not all([host, user, password, database]):
+                missing_vars = [var for var, val in [
+                    ("MYSQLHOST", host), ("MYSQLUSER", user), 
+                    ("MYSQLPASSWORD", password), ("MYSQLDATABASE", database)
+                ] if not val]
+                raise ValueError(f"Missing environment variables: {missing_vars}")
+            
+            port = int(port_str)
+            logger.info(f"Using Railway individual variables to {host}:{port}")
         else:
             # Local development
             host = "127.0.0.1"
@@ -22,6 +50,7 @@ def get_db_connection():
             password = "theo"
             database = "theo_eat"
             port = 3306
+            logger.info(f"Using local development connection to {host}:{port}")
         
         return mysql.connector.connect(
             host=host,
@@ -38,8 +67,9 @@ def get_db_connection():
         raise
 
 def read_sql_file():
-    # Read the theo_eats.sql file
+   # Read the theo_eats.sql file
     try:
+        # Adjust path based on your project structure
         # From backend folder, go up one level, then into database folder
         sql_file_path = os.path.join(os.path.dirname(__file__), '..', 'database', 'theo_eats.sql')
         
@@ -128,7 +158,7 @@ def initialize_database():
             conn.close()
 
 def verify_initialization():
-    # Verify that initialization was successful
+   # Verify that initialization was successful
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
