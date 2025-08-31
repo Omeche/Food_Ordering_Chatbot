@@ -59,7 +59,7 @@ def get_db_connection():
             database=database,
             port=port,
             auth_plugin="mysql_native_password",
-            autocommit=False,  # Manual control for initialization
+            autocommit=False,  # We want manual control for initialization
             charset='utf8mb4'
         )
     except mysql.connector.Error as e:
@@ -67,18 +67,61 @@ def get_db_connection():
         raise
 
 def read_sql_file():
-    """Read the theo_eats.sql file"""
+    # Read the theo_eats.sql file
     try:
-        # Adjust path based on your project structure
-        # From backend folder, go up one level, then into database folder
-        sql_file_path = os.path.join(os.path.dirname(__file__), '..', 'database', 'theo_eats.sql')
+        current_dir = os.path.dirname(__file__)  
+        logger.info(f"Current directory (init_db.py location): {current_dir}")
         
-        if not os.path.exists(sql_file_path):
-            logger.error(f"SQL file not found at: {sql_file_path}")
-            return None
-            
-        with open(sql_file_path, 'r', encoding='utf-8') as file:
-            return file.read()
+        # Based on GitHub structure
+        possible_paths = [
+            # From app/backend to database 
+            os.path.join(current_dir, '..', '..', 'database', 'theo_eats.sql'),
+            # From app/backend to app/database 
+            os.path.join(current_dir, '..', 'database', 'theo_eats.sql'),
+            # Absolute path if Railway puts everything in /app
+            '/app/database/theo_eats.sql',
+            # If the whole repo is in /app
+            os.path.join(current_dir, '..', '..', '..', 'database', 'theo_eats.sql'),
+        ]
+        
+        logger.info("Trying these paths for theo_eats.sql:")
+        for i, path in enumerate(possible_paths, 1):
+            logger.info(f"  {i}. {path}")
+            if os.path.exists(path):
+                logger.info(f"✓ Found SQL file at path {i}: {path}")
+                with open(path, 'r', encoding='utf-8') as file:
+                    return file.read()
+        
+        # If none found, do a comprehensive search
+        logger.error("SQL file not found at any expected location. Searching entire filesystem...")
+        
+        # Search from the root and common locations
+        search_roots = ['/app', current_dir]
+        for root_dir in search_roots:
+            if os.path.exists(root_dir):
+                logger.info(f"Searching in: {root_dir}")
+                for root, dirs, files in os.walk(root_dir):
+                    if 'theo_eats.sql' in files or 'theo_eat.sql' in files:
+                        found_file = 'theo_eats.sql' if 'theo_eats.sql' in files else 'theo_eat.sql'
+                        found_path = os.path.join(root, found_file)
+                        logger.info(f" FOUND SQL FILE: {found_path}")
+                        with open(found_path, 'r', encoding='utf-8') as file:
+                            return file.read()
+        
+        # Show directory structure for debugging
+        logger.error("Complete directory structure from current location:")
+        for root, dirs, files in os.walk(os.path.dirname(current_dir)):
+            level = root.replace(os.path.dirname(current_dir), '').count(os.sep)
+            indent = '  ' * level
+            logger.info(f"{indent}{os.path.basename(root)}/")
+            subindent = '  ' * (level + 1)
+            for file in files[:10]:  # Limit to first 10 files per directory
+                if file.endswith('.sql'):
+                    logger.info(f"{subindent}{file} SQL FILE")
+                else:
+                    logger.info(f"{subindent}{file}")
+        
+        return None
             
     except Exception as e:
         logger.error(f"Error reading SQL file: {e}")
@@ -107,7 +150,7 @@ def execute_sql_statements(cursor, sql_content):
                     cursor.execute(statement)
                     logger.info(f"Executed: {statement[:50]}...")
                 except mysql.connector.Error as e:
-                    # Log but continue - some statements might already exist
+                    # Log but continue 
                     logger.warning(f"Statement failed (might be normal): {e}")
                     
     except Exception as e:
@@ -122,7 +165,7 @@ def initialize_database():
     try:
         logger.info("Starting database initialization...")
         
-        # Debug: Show what environment variables we have
+        # Show what environment variables we have
         mysql_url = os.environ.get("MYSQL_URL")
         logger.info(f"MYSQL_URL available: {bool(mysql_url)}")
         
@@ -170,7 +213,7 @@ def initialize_database():
             conn.close()
 
 def verify_initialization():
-    # Verify that initialization was successful
+   # Verify that initialization was successful
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
