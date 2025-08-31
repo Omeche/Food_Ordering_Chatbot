@@ -45,7 +45,7 @@ if os.environ.get("RAILWAY_ENVIRONMENT"):
         logger.error("Please set MYSQL_URL variable in Railway or ensure MySQL service is connected")
     else:
         try:
-            db_init_success = initialize_database()
+            db_init_success = init_db.initialize_database()
             if db_init_success:
                 logger.info("Database initialization completed successfully")
             else:
