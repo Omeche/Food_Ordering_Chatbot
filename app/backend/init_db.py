@@ -67,7 +67,7 @@ def get_db_connection():
         raise
 
 def read_sql_file():
-   # Read the theo_eats.sql file
+    """Read the theo_eats.sql file"""
     try:
         # Adjust path based on your project structure
         # From backend folder, go up one level, then into database folder
@@ -85,7 +85,7 @@ def read_sql_file():
         return None
 
 def check_tables_exist(cursor):
-    # Check if tables already exist
+   # Check if tables already exist
     cursor.execute("SHOW TABLES")
     tables = [row[0] for row in cursor.fetchall()]
     
@@ -121,6 +121,18 @@ def initialize_database():
     
     try:
         logger.info("Starting database initialization...")
+        
+        # Debug: Show what environment variables we have
+        mysql_url = os.environ.get("MYSQL_URL")
+        logger.info(f"MYSQL_URL available: {bool(mysql_url)}")
+        
+        if mysql_url:
+            logger.info("Found MYSQL_URL, attempting connection...")
+        else:
+            logger.info("No MYSQL_URL found, checking individual variables...")
+            for var in ['MYSQLHOST', 'MYSQLUSER', 'MYSQLDATABASE', 'MYSQLPORT']:
+                value = os.environ.get(var)
+                logger.info(f"{var}: {bool(value)}")
         
         # Get connection
         conn = get_db_connection()
@@ -158,7 +170,7 @@ def initialize_database():
             conn.close()
 
 def verify_initialization():
-   # Verify that initialization was successful
+    # Verify that initialization was successful
     try:
         conn = get_db_connection()
         cursor = conn.cursor()
