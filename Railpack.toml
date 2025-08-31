@@ -1,2 +1,9 @@
 [build]
-dir = "backend"
+builder = "nixpacks"
+
+[deploy]
+startCommand = "cd app/backend && python init_db.py && python main.py"
+restartPolicyType = "on_failure"
+
+[env]
+RAILWAY_ENV = "production"
