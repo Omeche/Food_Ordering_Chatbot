@@ -6,17 +6,23 @@ from decimal import Decimal
 from . import db_handler, function_handler
 from . import init_db 
 
-
-# Initialize database on first run (only in production)
-if os.environ.get("RAILWAY_ENV") == "production":
-    try:
-        init_db.initialize_database()
-    except Exception as e:
-        print(f"Database initialization failed: {e}")
-        
 # Configure logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# Initialize database on startup (only in production)
+if os.environ.get("RAILWAY_ENVIRONMENT"):
+    logger.info("Railway environment detected. Initializing database...")
+    try:
+        db_init_success = init_db.initialize_database()
+        if db_init_success:
+            logger.info("Database initialization completed successfully")
+        else:
+            logger.error("Database initialization failed")
+    except Exception as e:
+        logger.error(f"Database initialization error: {e}")
+else:
+    logger.info("Local environment detected. Skipping auto-initialization")
 
 app = Flask(__name__)
 
