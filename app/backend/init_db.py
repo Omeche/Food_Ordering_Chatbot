@@ -67,7 +67,7 @@ def get_db_connection():
         raise
 
 def read_sql_file():
-    # Read the theo_eats.sql file and clean it for Railway
+    # Read the theo_eat.sql file and clean it for Railway
     try:
         current_dir = os.path.dirname(__file__)
         logger.info(f"Current directory: {current_dir}")
@@ -100,15 +100,27 @@ def read_sql_file():
 
 def clean_sql_for_railway(sql_content):
     # Clean SQL content to be Railway-compatible
-    # Remove problematic statements
-    sql_content = re.sub(r'CREATE DATABASE.*?;', '', sql_content, flags=re.IGNORECASE | re.DOTALL)
-    sql_content = re.sub(r'USE\s+\w+\s*;', '', sql_content, flags=re.IGNORECASE)
+    # Remove CREATE DATABASE and USE statements
+    sql_content = re.sub(r'CREATE DATABASE.*?;', '-- Database already exists on Railway', sql_content, flags=re.IGNORECASE | re.DOTALL)
+    sql_content = re.sub(r'USE\s+\w+\s*;', '-- Using Railway database', sql_content, flags=re.IGNORECASE)
     
     # Fix collation issues
     sql_content = sql_content.replace('utf8mb4_0900_ai_ci', 'utf8mb4_unicode_ci')
     
-    # Ensure proper spacing around INSERT statements
-    sql_content = re.sub(r'(\))(\s*)(CREATE)', r'\1;\2\3', sql_content)
+    # Fix the missing semicolon issue after INSERT INTO food_items
+    sql_content = re.sub(
+        r"(INSERT INTO food_items.*?VALUES.*?\('White Rice', 700\.00\))\s*(\n\n|\n)*(\s*--|\s*CREATE)",
+        r'\1;\n\n\3',
+        sql_content,
+        flags=re.DOTALL
+    )
+    
+    # Remove problematic verification SELECT at the end
+    sql_content = re.sub(r"SELECT 'Database setup completed.*?';", '', sql_content, flags=re.IGNORECASE)
+    sql_content = re.sub(r"DESCRIBE\s+\w+\s*;", '', sql_content, flags=re.IGNORECASE | re.MULTILINE)
+    
+    # Clean up extra whitespace
+    sql_content = re.sub(r'\n\s*\n\s*\n', '\n\n', sql_content)
     
     return sql_content
 
@@ -126,67 +138,52 @@ def check_tables_exist(cursor):
 def execute_sql_statements(cursor, sql_content):
     # Execute SQL statements from the file
     try:
-        # Handle DELIMITER statements for stored procedures/functions
+        # Split content by DELIMITER blocks
+        delimiter_blocks = re.split(r'DELIMITER\s+(\S+)', sql_content, flags=re.IGNORECASE)
+        
         current_delimiter = ';'
-        statements = []
-        current_statement = ""
         
-        lines = sql_content.split('\n')
-        i = 0
-        
-        while i < len(lines):
-            line = lines[i].strip()
-            
-            # Skip empty lines and comments
-            if not line or line.startswith('--'):
-                i += 1
+        for i, block in enumerate(delimiter_blocks):
+            block = block.strip()
+            if not block:
                 continue
                 
-            # Handle DELIMITER changes
-            if line.upper().startswith('DELIMITER'):
-                if current_statement.strip():
-                    statements.append(current_statement.strip())
-                    current_statement = ""
-                current_delimiter = line.split()[-1]
-                i += 1
+            # If this is a delimiter declaration
+            if i % 2 == 1:  # Odd indices are delimiter declarations
+                current_delimiter = block
                 continue
             
-            # Add line to current statement
-            current_statement += line + '\n'
+            # Split statements by current delimiter
+            if current_delimiter == ';':
+                statements = [stmt.strip() for stmt in block.split(';') if stmt.strip()]
+            else:
+                # For custom delimiters (like $), split by that delimiter
+                statements = [stmt.strip() for stmt in block.split(current_delimiter) if stmt.strip()]
             
-            # Check if statement is complete
-            if line.endswith(current_delimiter):
-                # Remove the delimiter from the statement
-                if current_delimiter != ';':
-                    current_statement = current_statement.replace(current_delimiter, '').strip()
-                statements.append(current_statement.strip())
-                current_statement = ""
-                
-                # Reset delimiter after procedure/function
-                if current_delimiter != ';':
-                    current_delimiter = ';'
-            
-            i += 1
-        
-        # Add any remaining statement
-        if current_statement.strip():
-            statements.append(current_statement.strip())
-        
-        # Execute each statement
-        for statement in statements:
-            if statement and not statement.startswith('--'):
-                try:
-                    # Clean the statement
-                    statement = statement.replace(';;', ';').strip()
-                    if statement.endswith(';'):
-                        statement = statement[:-1]
+            # Execute each statement
+            for statement in statements:
+                if not statement or statement.startswith('--'):
+                    continue
                     
+                try:
+                    # Skip problematic SELECT statements that return results
+                    if statement.upper().startswith("SELECT 'Database setup completed"):
+                        logger.info("Skipping verification SELECT statement")
+                        continue
+                        
                     cursor.execute(statement)
+                    
+                    # Consume any results to prevent "Unread result found" error
+                    try:
+                        cursor.fetchall()
+                    except mysql.connector.Error:
+                        pass  # No results to fetch
+                    
                     logger.info(f"Executed: {statement[:60]}...")
                     
                 except mysql.connector.Error as e:
-                    # Log warnings for expected failures 
-                    if "doesn't exist" in str(e) or "Unknown" in str(e):
+                    # Log warnings for expected failures
+                    if any(phrase in str(e).lower() for phrase in ["doesn't exist", "unknown", "already exists"]):
                         logger.warning(f"Statement failed (might be normal): {e}")
                     else:
                         logger.error(f"Statement failed: {e}")
