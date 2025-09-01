@@ -95,6 +95,8 @@
       --df-messenger-button-titlebar-color: #128C7E;
       --df-messenger-chat-background-color: #1e1e1e;
       --df-messenger-send-icon: #25d366;
+      --df-messenger-chat-window-height: 400px;
+      --df-messenger-chat-window-width: 300px;
       position: fixed;
       bottom: 20px; 
       right: 20px; 
@@ -126,12 +128,12 @@
       .card p { font-size: 0.9rem; }
 
       df-messenger {
+        --df-messenger-chat-window-height: 350px !important;
+        --df-messenger-chat-window-width: 280px !important;
         bottom: 15px !important;
         right: 15px !important;
-        width: 90vw !important;
-        max-width: 350px !important;
-        height: 50vh !important;
-        max-height: 400px !important;
+        width: 280px !important;
+        height: 350px !important;
       }
 
       #contact p { font-size: 0.95rem; line-height: 1.6; text-align: center; }
@@ -152,10 +154,10 @@
       .card p { font-size: 0.85rem; }
 
       df-messenger {
-        width: 85vw !important;
-        max-width: 320px !important;
-        height: 45vh !important;
-        max-height: 350px !important;
+        --df-messenger-chat-window-height: 320px !important;
+        --df-messenger-chat-window-width: 260px !important;
+        width: 260px !important;
+        height: 320px !important;
         bottom: 10px !important;
         right: 10px !important;
       }
@@ -165,10 +167,10 @@
 
     @media (max-width: 375px) {
       df-messenger {
-        width: 80vw !important;
-        max-width: 300px !important;
-        height: 40vh !important;
-        max-height: 320px !important;
+        --df-messenger-chat-window-height: 300px !important;
+        --df-messenger-chat-window-width: 240px !important;
+        width: 240px !important;
+        height: 300px !important;
         bottom: 8px !important;
         right: 8px !important;
       }
