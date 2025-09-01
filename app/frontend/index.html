@@ -271,6 +271,8 @@
           console.log("Chatbot loaded and visible.");
           // Resize chatbot on mobile
           resizeChatbot();
+          // Open chat on mobile
+          openChatOnMobile();
         });
       }
     });
@@ -295,6 +297,22 @@
         messenger.style.display = 'none';
         messenger.style.display = 'block';
       }, 100);
+    }
+
+    // Function to open chat on mobile
+    function openChatOnMobile() {
+      const messenger = document.querySelector('df-messenger');
+      if (!messenger || window.innerWidth > 768) return;
+      // Wait for shadow root
+      setTimeout(() => {
+        const shadow = messenger.shadowRoot;
+        if (shadow) {
+          const button = shadow.querySelector('button');
+          if (button) {
+            button.click();
+          }
+        }
+      }, 500);
     }
 
     // Resize on window resize
