@@ -1,11 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TheoEats - Order Online</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
+  <!-- SEO Metadata -->
+  <meta name="description" content="Order delicious meals online with TheoEats. Fast, reliable delivery right to your doorstep." />
+  <meta name="keywords" content="TheoEats, food delivery, online ordering, meals, fast food, Nigeria" />
+  <meta name="author" content="TheoEats" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="TheoEats - Order Online" />
+  <meta property="og:description" content="Order delicious meals online with TheoEats. Fast, reliable delivery right to your doorstep." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://theoeats.com" />
+  <meta property="og:image" content="https://theoeats.com/static/banner.jpg" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- Styles -->
   <style>
     /* Global */
     body {
@@ -94,46 +112,19 @@
 
     /* Mobile Responsiveness */
     @media (max-width: 768px) {
-      /* Header adjustments */
-      header {
-        padding: 12px 15px;
-      }
-      header h1 { 
-        font-size: 1.3rem; 
-      }
-      nav a { 
-        margin-left: 12px; 
-        font-size: 0.9rem;
-      }
+      header { padding: 12px 15px; }
+      header h1 { font-size: 1.3rem; }
+      nav a { margin-left: 12px; font-size: 0.9rem; }
 
-      /* Section padding */
-      section { 
-        padding: 25px 15px; 
-      }
-      h2 { 
-        font-size: 1.6rem; 
-        margin-bottom: 20px;
-      }
+      section { padding: 25px 15px; }
+      h2 { font-size: 1.6rem; margin-bottom: 20px; }
 
-      /* Menu grid adjustments */
-      .menu-grid {
-        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-        gap: 15px;
-      }
-      .card {
-        padding: 12px;
-      }
-      .card img { 
-        height: 140px; 
-      }
-      .card h3 { 
-        font-size: 1rem; 
-      }
-      .card p { 
-        font-size: 0.9rem; 
-      }
+      .menu-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+      .card { padding: 12px; }
+      .card img { height: 140px; }
+      .card h3 { font-size: 1rem; }
+      .card p { font-size: 0.9rem; }
 
-      /* Chatbot mobile adjustments */
       df-messenger {
         bottom: 15px !important;
         right: 15px !important;
@@ -143,60 +134,23 @@
         max-height: 500px !important;
       }
 
-      /* Contact section */
-      #contact p {
-        font-size: 0.95rem;
-        line-height: 1.6;
-        text-align: center;
-      }
-
-      /* Footer */
-      footer {
-        font-size: 0.85rem;
-        padding: 15px;
-      }
+      #contact p { font-size: 0.95rem; line-height: 1.6; text-align: center; }
+      footer { font-size: 0.85rem; padding: 15px; }
     }
 
-    /* Small mobile devices */
     @media (max-width: 480px) {
-      header {
-        padding: 10px 12px;
-      }
-      header h1 { 
-        font-size: 1.2rem; 
-      }
-      nav a { 
-        font-size: 0.85rem;
-        margin-left: 10px;
-      }
+      header { padding: 10px 12px; }
+      header h1 { font-size: 1.2rem; }
+      nav a { font-size: 0.85rem; margin-left: 10px; }
       
-      section { 
-        padding: 20px 12px; 
-      }
-      
-      h2 {
-        font-size: 1.4rem;
-      }
-      
-      .menu-grid {
-        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
-        gap: 12px;
-      }
-      
-      .card {
-        padding: 10px;
-      }
-      .card img { 
-        height: 120px; 
-      }
-      .card h3 { 
-        font-size: 0.95rem; 
-      }
-      .card p { 
-        font-size: 0.85rem; 
-      }
+      section { padding: 20px 12px; }
+      h2 { font-size: 1.4rem; }
+      .menu-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+      .card { padding: 10px; }
+      .card img { height: 120px; }
+      .card h3 { font-size: 0.95rem; }
+      .card p { font-size: 0.85rem; }
 
-      /* Chatbot for very small screens */
       df-messenger {
         width: calc(100vw - 20px) !important;
         max-width: 340px !important;
@@ -206,12 +160,9 @@
         right: 10px !important;
       }
 
-      #contact p {
-        font-size: 0.9rem;
-      }
+      #contact p { font-size: 0.9rem; }
     }
 
-    /* Extra small screens (like iPhone SE) */
     @media (max-width: 375px) {
       df-messenger {
         width: calc(100vw - 16px) !important;
@@ -261,6 +212,7 @@
 
   <!-- JS -->
   <script>
+    // Menu items
     const menu = [
       { name: "Jollof Rice", price: 800, img: "Jollof-rice.jpg" },
       { name: "Porridge Beans", price: 700, img: "beans-porridge.jpg" },
@@ -305,6 +257,16 @@
         const total = itemsMatch[2];
         const items = itemsStr.split(", ").map(x => x.trim());
         localStorage.setItem("order", JSON.stringify({ items, total }));
+      }
+    });
+
+    // Logging for visibility in console
+    document.addEventListener("DOMContentLoaded", function () {
+      console.log("TheoEats index.html loaded successfully.");
+      if (messenger) {
+        messenger.addEventListener("load", () => {
+          console.log("Chatbot loaded and visible.");
+        });
       }
     });
   </script>
