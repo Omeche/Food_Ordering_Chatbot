@@ -95,6 +95,7 @@
       --df-messenger-button-titlebar-color: #128C7E;
       --df-messenger-chat-background-color: #1e1e1e;
       --df-messenger-send-icon: #25d366;
+      --df-messenger-chat-border-radius: 8px;
       position: fixed;
       bottom: 20px; 
       right: 20px; 
@@ -108,6 +109,8 @@
       background-size: 400% 400%;
       animation: gradientFlow 6s ease infinite;
       border-radius: 50% !important;
+      width: 60px !important;
+      height: 60px !important;
     }
 
     /* Mobile Responsiveness */
@@ -125,19 +128,20 @@
       .card h3 { font-size: 1rem; }
       .card p { font-size: 0.9rem; }
 
-      /* Mobile chatbot - compact and non-intrusive */
+      /* Mobile chatbot - standard small popup like other websites */
       df-messenger {
-        bottom: 15px !important;
-        right: 15px !important;
-        width: 280px !important;
-        height: 350px !important;
-        max-width: calc(100vw - 30px) !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        width: 320px !important;
+        height: 450px !important;
+        max-width: calc(100vw - 40px) !important;
+        max-height: 60vh !important;
       }
 
-      /* When chatbot is minimized, show smaller chat button */
-      df-messenger[chat-open="false"] {
-        width: 60px !important;
-        height: 60px !important;
+      /* Chat button when minimized */
+      df-messenger::part(button) {
+        width: 56px !important;
+        height: 56px !important;
       }
 
       #contact p { font-size: 0.95rem; line-height: 1.6; text-align: center; }
@@ -157,37 +161,38 @@
       .card h3 { font-size: 0.95rem; }
       .card p { font-size: 0.85rem; }
 
-      /* Smaller mobile screens - more compact chatbot */
+      /* Small mobile screens - keep chatbot compact like WhatsApp Business */
       df-messenger {
-        width: 260px !important;
-        height: 320px !important;
-        max-width: calc(100vw - 20px) !important;
-        bottom: 10px !important;
-        right: 10px !important;
+        width: 300px !important;
+        height: 400px !important;
+        max-width: calc(100vw - 32px) !important;
+        max-height: 55vh !important;
+        bottom: 16px !important;
+        right: 16px !important;
       }
 
-      /* Minimized state on small screens */
-      df-messenger[chat-open="false"] {
-        width: 55px !important;
-        height: 55px !important;
+      df-messenger::part(button) {
+        width: 52px !important;
+        height: 52px !important;
       }
 
       #contact p { font-size: 0.9rem; }
     }
 
     @media (max-width: 375px) {
-      /* Very small screens - keep chatbot compact */
+      /* Very small screens - minimal chatbot footprint */
       df-messenger {
-        width: 240px !important;
-        height: 300px !important;
-        max-width: calc(100vw - 16px) !important;
-        bottom: 8px !important;
-        right: 8px !important;
+        width: 280px !important;
+        height: 380px !important;
+        max-width: calc(100vw - 24px) !important;
+        max-height: 50vh !important;
+        bottom: 12px !important;
+        right: 12px !important;
       }
 
-      df-messenger[chat-open="false"] {
-        width: 50px !important;
-        height: 50px !important;
+      df-messenger::part(button) {
+        width: 48px !important;
+        height: 48px !important;
       }
     }
 
@@ -243,7 +248,9 @@
     intent="WELCOME"
     chat-title="TheoBot"
     agent-id="e1af3028-ec3a-4d28-955a-6b1823e750fd"
-    language-code="en">
+    language-code="en"
+    expand="false"
+    allow-feedback="false">
   </df-messenger>
 
   <!-- JS -->
