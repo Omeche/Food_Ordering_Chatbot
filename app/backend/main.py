@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify
+from flask import Flask, request, jsonify, send_from_directory
 from flask_cors import CORS
 import re
 import logging, os
@@ -60,10 +60,49 @@ app = Flask(__name__)
 # Enable CORS for all domains on all routes
 CORS(app, origins=["*"], allow_headers=["*"], methods=["*"], supports_credentials=True)
 
-@app.route("/")
-def index():
-    return "Theoeats backend is running!"
+# Frontend routes - serve static files
+@app.route('/')
+def serve_index():
+    # Serve index.html file
+    try:
+        # Navigate up from backend/ to app/ then into frontend/
+        frontend_path = os.path.join(os.path.dirname(__file__), '..', 'frontend')
+        return send_from_directory(frontend_path, 'index.html')
+    except Exception as e:
+        logger.error(f"Error serving index.html: {e}")
+        return "Frontend not found. Please ensure frontend files are in the 'frontend' directory.", 404
 
+@app.route('/cart.html')
+def serve_cart():
+    # Serve cart.html file
+    try:
+        # Navigate up from backend/ to app/ then into frontend/
+        frontend_path = os.path.join(os.path.dirname(__file__), '..', 'frontend')
+        return send_from_directory(frontend_path, 'cart.html')
+    except Exception as e:
+        logger.error(f"Error serving cart.html: {e}")
+        return "Cart page not found.", 404
+
+@app.route('/<path:filename>')
+def serve_static(filename):
+    # Serve static frontend files
+    try:
+        # Navigate up from backend/ to app/ then into frontend/
+        frontend_path = os.path.join(os.path.dirname(__file__), '..', 'frontend')
+        
+        # Check if file exists in frontend directory
+        file_path = os.path.join(frontend_path, filename)
+        if os.path.exists(file_path):
+            return send_from_directory(frontend_path, filename)
+        
+        # If file doesn't exist, return 404
+        logger.warning(f"File not found: {filename}")
+        return "File not found", 404
+    except Exception as e:
+        logger.error(f"Error serving static file {filename}: {e}")
+        return "Error serving file", 500
+
+# API Routes
 @app.route("/webhook", methods=["POST"])
 def handle_requests():
     try:
@@ -474,3 +513,6 @@ def cancel_order(parameters: dict, session_id: str):
     message = db_handler.clear_order(order_id)
     return jsonify({"fulfillmentText": message})
 
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
