@@ -87,7 +87,7 @@
 
     footer { text-align: center; padding: 15px; background: #075E54; color: white; font-size: 0.85rem; margin-top: 40px; }
 
-    /* Chatbot Theme - Desktop */
+    /* Chatbot Theme */
     df-messenger {
       --df-messenger-bot-message: #075E54;
       --df-messenger-user-message: #25d366;
@@ -96,32 +96,19 @@
       --df-messenger-chat-background-color: #1e1e1e;
       --df-messenger-send-icon: #25d366;
       --df-messenger-chat-border-radius: 8px;
-      --df-messenger-minimized: false;
-      position: fixed !important;
-      bottom: 20px !important; 
-      right: 20px !important; 
-      z-index: 999 !important;
-      width: 300px !important;
-      height: 400px !important;
-      max-width: 300px !important;
-      max-height: 400px !important;
+      --df-messenger-chat-max-height: 400px;
+      --df-messenger-chat-max-width: 300px;
+      position: fixed;
+      bottom: 20px; 
+      right: 20px; 
+      z-index: 999;
     }
     
     df-messenger::part(button) {
-      background: linear-gradient(270deg, #25d366, #128C7E, #34b7f1) !important;
-      background-size: 400% 400% !important;
-      animation: gradientFlow 6s ease infinite !important;
+      background: linear-gradient(270deg, #25d366, #128C7E, #34b7f1);
+      background-size: 400% 400%;
+      animation: gradientFlow 6s ease infinite;
       border-radius: 50% !important;
-      width: 60px !important;
-      height: 60px !important;
-    }
-
-    /* Force chatbot container to respect our sizing */
-    df-messenger > div {
-      width: 100% !important;
-      height: 100% !important;
-      max-width: inherit !important;
-      max-height: inherit !important;
     }
 
     /* Mobile Responsiveness */
@@ -139,28 +126,14 @@
       .card h3 { font-size: 1rem; }
       .card p { font-size: 0.9rem; }
 
-      /* Mobile chatbot - force small size like standard websites */
+      /* Mobile chatbot - use CSS variables for proper sizing */
       df-messenger {
-        bottom: 20px !important;
-        right: 20px !important;
-        width: 280px !important;
-        height: 350px !important;
-        max-width: 280px !important;
-        max-height: 350px !important;
-        min-width: 280px !important;
-        min-height: 350px !important;
-      }
-
-      /* Override any internal mobile styles */
-      df-messenger * {
-        max-width: inherit !important;
-        max-height: inherit !important;
-      }
-
-      /* Chat button when minimized */
-      df-messenger::part(button) {
-        width: 56px !important;
-        height: 56px !important;
+        --df-messenger-chat-max-height: 350px;
+        --df-messenger-chat-max-width: 280px;
+        --df-messenger-chat-min-height: 350px;
+        --df-messenger-chat-min-width: 280px;
+        bottom: 15px !important;
+        right: 15px !important;
       }
 
       #contact p { font-size: 0.95rem; line-height: 1.6; text-align: center; }
@@ -180,60 +153,27 @@
       .card h3 { font-size: 0.95rem; }
       .card p { font-size: 0.85rem; }
 
-      /* Small mobile screens - fixed compact size */
+      /* Smaller mobile screens */
       df-messenger {
-        width: 260px !important;
-        height: 320px !important;
-        max-width: 260px !important;
-        max-height: 320px !important;
-        min-width: 260px !important;
-        min-height: 320px !important;
-        bottom: 16px !important;
-        right: 16px !important;
-      }
-
-      df-messenger::part(button) {
-        width: 52px !important;
-        height: 52px !important;
+        --df-messenger-chat-max-height: 320px;
+        --df-messenger-chat-max-width: 260px;
+        --df-messenger-chat-min-height: 320px;
+        --df-messenger-chat-min-width: 260px;
+        bottom: 10px !important;
+        right: 10px !important;
       }
 
       #contact p { font-size: 0.9rem; }
     }
 
     @media (max-width: 375px) {
-      /* Very small screens - compact fixed size */
       df-messenger {
-        width: 240px !important;
-        height: 300px !important;
-        max-width: 240px !important;
-        max-height: 300px !important;
-        min-width: 240px !important;
-        min-height: 300px !important;
-        bottom: 12px !important;
-        right: 12px !important;
-      }
-
-      df-messenger::part(button) {
-        width: 48px !important;
-        height: 48px !important;
-      }
-    }
-
-    /* Additional mobile optimizations */
-    @media (max-width: 768px) {
-      /* Ensure chatbot doesn't interfere with scrolling */
-      body {
-        padding-bottom: 80px; /* Space for chatbot button when minimized */
-      }
-      
-      /* Make menu cards more touch-friendly */
-      .card {
-        min-height: 200px;
-        cursor: pointer;
-      }
-      
-      .card:active {
-        transform: scale(0.98);
+        --df-messenger-chat-max-height: 300px;
+        --df-messenger-chat-max-width: 240px;
+        --df-messenger-chat-min-height: 300px;
+        --df-messenger-chat-min-width: 240px;
+        bottom: 8px !important;
+        right: 8px !important;
       }
     }
   </style>
@@ -272,8 +212,8 @@
     chat-title="TheoBot"
     agent-id="e1af3028-ec3a-4d28-955a-6b1823e750fd"
     language-code="en"
-    expand="true"
-    allow-feedback="false">
+    chat-width="300"
+    chat-height="400">
   </df-messenger>
 
   <!-- JS -->
@@ -326,9 +266,38 @@
       }
     });
 
-    // Logging for visibility in console
+    // Force proper mobile sizing on load
     document.addEventListener("DOMContentLoaded", function () {
       console.log("TheoEats index.html loaded successfully.");
+      
+      // Mobile-specific sizing override
+      if (window.innerWidth <= 768) {
+        const setMobileSize = () => {
+          const messenger = document.querySelector('df-messenger');
+          if (messenger) {
+            const maxWidth = Math.min(280, window.innerWidth - 40);
+            const maxHeight = Math.min(350, window.innerHeight * 0.6);
+            
+            messenger.setAttribute('chat-width', maxWidth.toString());
+            messenger.setAttribute('chat-height', maxHeight.toString());
+            
+            // Force the shadow DOM elements to respect our sizing
+            setTimeout(() => {
+              const chatDialog = messenger.shadowRoot?.querySelector('.chat-wrapper');
+              if (chatDialog) {
+                chatDialog.style.maxWidth = maxWidth + 'px';
+                chatDialog.style.maxHeight = maxHeight + 'px';
+                chatDialog.style.width = maxWidth + 'px';
+                chatDialog.style.height = maxHeight + 'px';
+              }
+            }, 1000);
+          }
+        };
+        
+        setMobileSize();
+        window.addEventListener('resize', setMobileSize);
+      }
+      
       if (messenger) {
         messenger.addEventListener("load", () => {
           console.log("Chatbot loaded and visible.");
