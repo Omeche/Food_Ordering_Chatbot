@@ -131,11 +131,11 @@
       .card p { font-size: 0.9rem; }
 
       df-messenger {
-        bottom: 15px !important;
-        right: 15px !important;
-        width: 200px !important;
-        height: 150px !important;
-        z-index: 999 !important;
+        display: none !important;
+      }
+
+      #mobile-chat-toggle {
+        display: block !important;
       }
 
       #contact p { font-size: 0.95rem; line-height: 1.6; text-align: center; }
@@ -203,6 +203,9 @@
   <footer>
     <p>&copy; 2025 TheoEats. All Rights Reserved.</p>
   </footer>
+
+  <!-- Mobile Chat Toggle Button -->
+  <button id="mobile-chat-toggle" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 1000; background: #25d366; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; cursor: pointer;">💬</button>
 
   <!-- Chatbot -->
   <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
@@ -317,6 +320,36 @@
 
     // Resize on window resize
     window.addEventListener('resize', resizeChatbot);
+
+    // Mobile chat toggle
+    const toggleButton = document.getElementById('mobile-chat-toggle');
+    let chatOpen = false;
+
+    toggleButton.addEventListener('click', function() {
+      if (!chatOpen) {
+        // Show chatbot
+        messenger.style.display = 'block';
+        // Open chat
+        setTimeout(() => {
+          const shadow = messenger.shadowRoot;
+          if (shadow) {
+            const button = shadow.querySelector('button');
+            if (button) {
+              button.click();
+            }
+          }
+        }, 100);
+        // Change button to close
+        toggleButton.textContent = '✕';
+        chatOpen = true;
+      } else {
+        // Hide chatbot
+        messenger.style.display = 'none';
+        // Change button back
+        toggleButton.textContent = '💬';
+        chatOpen = false;
+      }
+    });
   </script>
 </body>
 </html>
