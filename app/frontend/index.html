@@ -115,32 +115,39 @@
       height: 400px !important;
     }
 
-    /* Mobile Responsiveness */
-    @media (max-width: 768px) {
-      header { padding: 12px 15px; }
-      header h1 { font-size: 1.3rem; }
-      nav a { margin-left: 12px; font-size: 0.9rem; }
+  /* Mobile Responsiveness */
+  @media (max-width: 768px) {
+    header { padding: 12px 15px; }
+    header h1 { font-size: 1.3rem; }
+    nav a { margin-left: 12px; font-size: 0.9rem; }
 
-      section { padding: 25px 15px; }
-      h2 { font-size: 1.6rem; margin-bottom: 20px; }
+    section { padding: 25px 15px; }
+    h2 { font-size: 1.6rem; margin-bottom: 20px; }
 
-      .menu-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-      .card { padding: 12px; }
-      .card img { height: 140px; }
-      .card h3 { font-size: 1rem; }
-      .card p { font-size: 0.9rem; }
+    .menu-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+    .card { padding: 12px; }
+    .card img { height: 140px; }
+    .card h3 { font-size: 1rem; }
+    .card p { font-size: 0.9rem; }
 
-      df-messenger {
-        display: none !important;
-      }
-
-      #mobile-chat-toggle {
-        display: block !important;
-      }
-
-      #contact p { font-size: 0.95rem; line-height: 1.6; text-align: center; }
-      footer { font-size: 0.85rem; padding: 15px; }
+    df-messenger {
+      width: 80vw !important;
+      height: 78vh !important;
+      max-width: none !important;
+      max-height: none !important;
+      position: fixed !important;
+      bottom: 135px !important;
+      right: 0px !important;
+      left: auto !important;
+      top: auto !important;
+      border-radius: 40px !important;
+      overflow: hidden !important;
+      z-index: 999;
     }
+
+    #contact p { font-size: 0.95rem; line-height: 1.6; text-align: center; }
+    footer { font-size: 0.85rem; padding: 15px; }
+  }
 
     @media (max-width: 480px) {
       header { padding: 10px 12px; }
@@ -203,9 +210,6 @@
   <footer>
     <p>&copy; 2025 TheoEats. All Rights Reserved.</p>
   </footer>
-
-  <!-- Mobile Chat Toggle Button -->
-  <button id="mobile-chat-toggle" style="display: none; position: fixed; bottom: 20px; right: 20px; z-index: 1000; background: #25d366; color: white; border: none; border-radius: 50%; width: 50px; height: 50px; font-size: 20px; cursor: pointer;">💬</button>
 
   <!-- Chatbot -->
   <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
@@ -320,36 +324,6 @@
 
     // Resize on window resize
     window.addEventListener('resize', resizeChatbot);
-
-    // Mobile chat toggle
-    const toggleButton = document.getElementById('mobile-chat-toggle');
-    let chatOpen = false;
-
-    toggleButton.addEventListener('click', function() {
-      if (!chatOpen) {
-        // Show chatbot
-        messenger.style.display = 'block';
-        // Open chat
-        setTimeout(() => {
-          const shadow = messenger.shadowRoot;
-          if (shadow) {
-            const button = shadow.querySelector('button');
-            if (button) {
-              button.click();
-            }
-          }
-        }, 100);
-        // Change button to close
-        toggleButton.textContent = '✕';
-        chatOpen = true;
-      } else {
-        // Hide chatbot
-        messenger.style.display = 'none';
-        // Change button back
-        toggleButton.textContent = '💬';
-        chatOpen = false;
-      }
-    });
   </script>
 </body>
 </html>
