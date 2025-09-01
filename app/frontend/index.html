@@ -95,7 +95,6 @@
       --df-messenger-button-titlebar-color: #128C7E;
       --df-messenger-chat-background-color: #1e1e1e;
       --df-messenger-send-icon: #25d366;
-      --df-messenger-chat-border-radius: 8px;
       position: fixed;
       bottom: 20px; 
       right: 20px; 
@@ -111,35 +110,65 @@
       border-radius: 50% !important;
     }
 
-    /* Force mobile sizing through shadow DOM */
+    /* Mobile Responsiveness */
     @media (max-width: 768px) {
+      header { padding: 12px 15px; }
+      header h1 { font-size: 1.3rem; }
+      nav a { margin-left: 12px; font-size: 0.9rem; }
+
+      section { padding: 25px 15px; }
+      h2 { font-size: 1.6rem; margin-bottom: 20px; }
+
+      .menu-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+      .card { padding: 12px; }
+      .card img { height: 140px; }
+      .card h3 { font-size: 1rem; }
+      .card p { font-size: 0.9rem; }
+
       df-messenger {
-        --df-messenger-chat-window-height: 350px !important;
-        --df-messenger-chat-window-width: 280px !important;
-        width: 280px !important;
-        height: 350px !important;
         bottom: 15px !important;
         right: 15px !important;
+        width: 90vw !important;
+        max-width: 350px !important;
+        height: 50vh !important;
+        max-height: 400px !important;
       }
+
+      #contact p { font-size: 0.95rem; line-height: 1.6; text-align: center; }
+      footer { font-size: 0.85rem; padding: 15px; }
     }
 
     @media (max-width: 480px) {
+      header { padding: 10px 12px; }
+      header h1 { font-size: 1.2rem; }
+      nav a { font-size: 0.85rem; margin-left: 10px; }
+      
+      section { padding: 20px 12px; }
+      h2 { font-size: 1.4rem; }
+      .menu-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+      .card { padding: 10px; }
+      .card img { height: 120px; }
+      .card h3 { font-size: 0.95rem; }
+      .card p { font-size: 0.85rem; }
+
       df-messenger {
-        --df-messenger-chat-window-height: 320px !important;
-        --df-messenger-chat-window-width: 260px !important;
-        width: 260px !important;
-        height: 320px !important;
+        width: 85vw !important;
+        max-width: 320px !important;
+        height: 45vh !important;
+        max-height: 350px !important;
         bottom: 10px !important;
         right: 10px !important;
       }
+
+      #contact p { font-size: 0.9rem; }
     }
 
     @media (max-width: 375px) {
       df-messenger {
-        --df-messenger-chat-window-height: 300px !important;
-        --df-messenger-chat-window-width: 240px !important;
-        width: 240px !important;
-        height: 300px !important;
+        width: 80vw !important;
+        max-width: 300px !important;
+        height: 40vh !important;
+        max-height: 320px !important;
         bottom: 8px !important;
         right: 8px !important;
       }
@@ -179,10 +208,7 @@
     intent="WELCOME"
     chat-title="TheoBot"
     agent-id="e1af3028-ec3a-4d28-955a-6b1823e750fd"
-    language-code="en"
-    chat-width="300"
-    chat-height="400"
-    allow-fullscreen="false">
+    language-code="en">
   </df-messenger>
 
   <!-- JS -->
@@ -235,73 +261,12 @@
       }
     });
 
-    // Force proper mobile sizing on load
+    // Logging for visibility in console
     document.addEventListener("DOMContentLoaded", function () {
       console.log("TheoEats index.html loaded successfully.");
-      
-      const messenger = document.querySelector('df-messenger');
-      
       if (messenger) {
-        // Wait for the messenger to load
-        messenger.addEventListener('df-messenger-loaded', () => {
+        messenger.addEventListener("load", () => {
           console.log("Chatbot loaded and visible.");
-          
-          // Mobile-specific sizing override using shadow DOM
-          if (window.innerWidth <= 768) {
-            setTimeout(() => {
-              try {
-                const shadowRoot = messenger.shadowRoot;
-                if (shadowRoot) {
-                  // Create and inject mobile-specific styles into shadow DOM
-                  const style = document.createElement('style');
-                  style.textContent = `
-                    .chat-wrapper {
-                      max-width: 280px !important;
-                      max-height: 350px !important;
-                      width: 280px !important;
-                      height: 350px !important;
-                    }
-                    
-                    .chat-dialog {
-                      max-width: 280px !important;
-                      max-height: 350px !important;
-                      width: 280px !important;
-                      height: 350px !important;
-                    }
-                    
-                    @media (max-width: 480px) {
-                      .chat-wrapper, .chat-dialog {
-                        max-width: 260px !important;
-                        max-height: 320px !important;
-                        width: 260px !important;
-                        height: 320px !important;
-                      }
-                    }
-                    
-                    @media (max-width: 375px) {
-                      .chat-wrapper, .chat-dialog {
-                        max-width: 240px !important;
-                        max-height: 300px !important;
-                        width: 240px !important;
-                        height: 300px !important;
-                      }
-                    }
-                  `;
-                  
-                  // Append styles to shadow root
-                  if (shadowRoot.adoptedStyleSheets) {
-                    const sheet = new CSSStyleSheet();
-                    sheet.replaceSync(style.textContent);
-                    shadowRoot.adoptedStyleSheets = [...shadowRoot.adoptedStyleSheets, sheet];
-                  } else {
-                    shadowRoot.appendChild(style);
-                  }
-                }
-              } catch (e) {
-                console.log('Could not access shadow DOM:', e);
-              }
-            }, 2000);
-          }
         });
       }
     });
