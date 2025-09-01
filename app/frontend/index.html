@@ -264,9 +264,36 @@
       if (messenger) {
         messenger.addEventListener("load", () => {
           console.log("Chatbot loaded and visible.");
+          // Resize chatbot on mobile
+          resizeChatbot();
         });
       }
     });
+
+    // Function to resize chatbot on mobile
+    function resizeChatbot() {
+      const messenger = document.querySelector('df-messenger');
+      if (!messenger) return;
+      const width = window.innerWidth;
+      if (width <= 375) {
+        messenger.style.width = '130px';
+        messenger.style.height = '100px';
+      } else if (width <= 480) {
+        messenger.style.width = '150px';
+        messenger.style.height = '120px';
+      } else if (width <= 768) {
+        messenger.style.width = '200px';
+        messenger.style.height = '150px';
+      }
+      // Force update
+      setTimeout(() => {
+        messenger.style.display = 'none';
+        messenger.style.display = 'block';
+      }, 100);
+    }
+
+    // Resize on window resize
+    window.addEventListener('resize', resizeChatbot);
   </script>
 </body>
 </html>
