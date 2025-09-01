@@ -282,58 +282,77 @@
       }
     });
 
-    // Function to resize chatbot on mobile
-    function resizeChatbot() {
-      const messenger = document.querySelector('df-messenger');
-      if (!messenger) return;
-      const width = window.innerWidth;
-      if (width <= 375) {
-        messenger.style.width = '130px';
-        messenger.style.height = '100px';
-      } else if (width <= 480) {
-        messenger.style.width = '150px';
-        messenger.style.height = '120px';
-      } else if (width <= 768) {
-        messenger.style.width = '200px';
-        messenger.style.height = '150px';
-      }
-      // Force update
-      setTimeout(() => {
-        messenger.style.display = 'none';
-        messenger.style.display = 'block';
-      }, 100);
+  // Function to resize chatbot on mobile
+  function resizeChatbot() {
+    const messenger = document.querySelector('df-messenger');
+    if (!messenger) return;
+    const width = window.innerWidth;
+    if (width <= 375) {
+      messenger.style.width = '80px';
+      messenger.style.height = '60px';
+    } else if (width <= 480) {
+      messenger.style.width = '100px';
+      messenger.style.height = '80px';
+    } else if (width <= 768) {
+      messenger.style.width = '120px';
+      messenger.style.height = '100px';
     }
+    // Force update
+    setTimeout(() => {
+      messenger.style.display = 'none';
+      messenger.style.display = 'block';
+    }, 100);
+  }
 
-    // Function to open chat on mobile
-    function openChatOnMobile() {
-      const messenger = document.querySelector('df-messenger');
-      if (!messenger || window.innerWidth > 768) return;
-      // Wait for shadow root
-      setTimeout(() => {
-        const shadow = messenger.shadowRoot;
-        if (shadow) {
-          const button = shadow.querySelector('button');
-          if (button) {
-            button.click();
-          }
-          // Style the chat window
-          const chatWindow = shadow.querySelector('.es-window-container');
-          if (chatWindow) {
-            chatWindow.style.width = '50vw';
-            chatWindow.style.height = '50vh';
-            chatWindow.style.position = 'fixed';
-            chatWindow.style.bottom = '135px';
-            chatWindow.style.right = '0px';
-            chatWindow.style.borderRadius = '40px';
-            chatWindow.style.overflow = 'hidden';
-            chatWindow.style.zIndex = '999';
-          }
+  // Function to open chat on mobile
+  function openChatOnMobile() {
+    const messenger = document.querySelector('df-messenger');
+    if (!messenger || window.innerWidth > 768) return;
+    // Wait for shadow root
+    setTimeout(() => {
+      const shadow = messenger.shadowRoot;
+      if (shadow) {
+        const button = shadow.querySelector('button');
+        if (button) {
+          button.click();
         }
-      }, 500);
-    }
+        // Style the chat window to be very small initially
+        const chatWindow = shadow.querySelector('.es-window-container');
+        if (chatWindow) {
+          chatWindow.style.width = '80px';
+          chatWindow.style.height = '60px';
+          chatWindow.style.position = 'fixed';
+          chatWindow.style.bottom = '135px';
+          chatWindow.style.right = '0px';
+          chatWindow.style.borderRadius = '40px';
+          chatWindow.style.overflow = 'hidden';
+          chatWindow.style.zIndex = '999';
+        }
+      }
+    }, 500);
+  }
 
-    // Resize on window resize
-    window.addEventListener('resize', resizeChatbot);
+  // Resize on window resize
+  window.addEventListener('resize', resizeChatbot);
+
+  // Show welcome message on page load by opening chat and sending welcome intent
+  document.addEventListener('DOMContentLoaded', () => {
+    const messenger = document.querySelector('df-messenger');
+    if (!messenger) return;
+    // Open chat window
+    setTimeout(() => {
+      const shadow = messenger.shadowRoot;
+      if (shadow) {
+        const button = shadow.querySelector('button');
+        if (button) {
+          button.click();
+        }
+        // Send welcome intent message programmatically if possible
+        // Note: Dialogflow Messenger does not provide direct API to send intent programmatically,
+        // so we rely on the initial intent attribute in df-messenger tag.
+      }
+    }, 500);
+  });
   </script>
 </body>
 </html>
