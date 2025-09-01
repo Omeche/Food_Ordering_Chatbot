@@ -78,16 +78,148 @@
       --df-messenger-chat-background-color: #1e1e1e;
       --df-messenger-send-icon: #25d366;
       position: fixed;
-      bottom: 0; right: 20px; z-index: 999;
-
+      bottom: 20px; 
+      right: 20px; 
+      z-index: 999;
       width: 300px !important;
-      height: 400px !important; /* shorter height */
+      height: 400px !important;
     }
+    
     df-messenger::part(button) {
       background: linear-gradient(270deg, #25d366, #128C7E, #34b7f1);
       background-size: 400% 400%;
       animation: gradientFlow 6s ease infinite;
       border-radius: 50% !important;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      /* Header adjustments */
+      header {
+        padding: 12px 15px;
+      }
+      header h1 { 
+        font-size: 1.3rem; 
+      }
+      nav a { 
+        margin-left: 12px; 
+        font-size: 0.9rem;
+      }
+
+      /* Section padding */
+      section { 
+        padding: 25px 15px; 
+      }
+      h2 { 
+        font-size: 1.6rem; 
+        margin-bottom: 20px;
+      }
+
+      /* Menu grid adjustments */
+      .menu-grid {
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 15px;
+      }
+      .card {
+        padding: 12px;
+      }
+      .card img { 
+        height: 140px; 
+      }
+      .card h3 { 
+        font-size: 1rem; 
+      }
+      .card p { 
+        font-size: 0.9rem; 
+      }
+
+      /* Chatbot mobile adjustments */
+      df-messenger {
+        bottom: 15px !important;
+        right: 15px !important;
+        width: calc(100vw - 30px) !important;
+        max-width: 380px !important;
+        height: 60vh !important;
+        max-height: 500px !important;
+      }
+
+      /* Contact section */
+      #contact p {
+        font-size: 0.95rem;
+        line-height: 1.6;
+        text-align: center;
+      }
+
+      /* Footer */
+      footer {
+        font-size: 0.85rem;
+        padding: 15px;
+      }
+    }
+
+    /* Small mobile devices */
+    @media (max-width: 480px) {
+      header {
+        padding: 10px 12px;
+      }
+      header h1 { 
+        font-size: 1.2rem; 
+      }
+      nav a { 
+        font-size: 0.85rem;
+        margin-left: 10px;
+      }
+      
+      section { 
+        padding: 20px 12px; 
+      }
+      
+      h2 {
+        font-size: 1.4rem;
+      }
+      
+      .menu-grid {
+        grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+        gap: 12px;
+      }
+      
+      .card {
+        padding: 10px;
+      }
+      .card img { 
+        height: 120px; 
+      }
+      .card h3 { 
+        font-size: 0.95rem; 
+      }
+      .card p { 
+        font-size: 0.85rem; 
+      }
+
+      /* Chatbot for very small screens */
+      df-messenger {
+        width: calc(100vw - 20px) !important;
+        max-width: 340px !important;
+        height: 55vh !important;
+        max-height: 450px !important;
+        bottom: 10px !important;
+        right: 10px !important;
+      }
+
+      #contact p {
+        font-size: 0.9rem;
+      }
+    }
+
+    /* Extra small screens (like iPhone SE) */
+    @media (max-width: 375px) {
+      df-messenger {
+        width: calc(100vw - 16px) !important;
+        height: 50vh !important;
+        max-height: 400px !important;
+        bottom: 8px !important;
+        right: 8px !important;
+      }
     }
   </style>
 </head>
