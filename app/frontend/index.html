@@ -87,16 +87,6 @@
 
     footer { text-align: center; padding: 15px; background: #075E54; color: white; font-size: 0.85rem; margin-top: 40px; }
 
-    /* Chatbot Container */
-    #chatbot-container {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      z-index: 999;
-      width: 300px;
-      height: 400px;
-    }
-
     /* Chatbot Theme */
     df-messenger {
       --df-messenger-bot-message: #075E54;
@@ -105,11 +95,12 @@
       --df-messenger-button-titlebar-color: #128C7E;
       --df-messenger-chat-background-color: #1e1e1e;
       --df-messenger-send-icon: #25d366;
-      --df-messenger-chat-window-height: 400px;
-      --df-messenger-chat-window-width: 300px;
-      position: relative;
-      width: 100%;
-      height: 100%;
+      position: fixed;
+      bottom: 20px; 
+      right: 20px; 
+      z-index: 999;
+      width: 300px !important;
+      height: 400px !important;
     }
     
     df-messenger::part(button) {
@@ -119,7 +110,7 @@
       border-radius: 50% !important;
     }
 
-    /* Mobile Responsiveness */
+    /* AGGRESSIVE Mobile Chat Overrides */
     @media (max-width: 768px) {
       header { padding: 12px 15px; }
       header h1 { font-size: 1.3rem; }
@@ -134,17 +125,18 @@
       .card h3 { font-size: 1rem; }
       .card p { font-size: 0.9rem; }
 
-      #chatbot-container {
-        width: 280px;
-        height: 350px;
-        bottom: 15px;
-        right: 15px;
-        overflow: hidden;
-      }
-
+      /* FORCE TINY CHATBOT ON MOBILE */
       df-messenger {
-        --df-messenger-chat-window-height: 350px !important;
-        --df-messenger-chat-window-width: 280px !important;
+        bottom: 15px !important;
+        right: 15px !important;
+        width: 250px !important;
+        height: 300px !important;
+        max-width: 250px !important;
+        max-height: 300px !important;
+        min-width: 250px !important;
+        min-height: 300px !important;
+        transform: scale(0.8) !important;
+        transform-origin: bottom right !important;
       }
 
       #contact p { font-size: 0.95rem; line-height: 1.6; text-align: center; }
@@ -164,32 +156,47 @@
       .card h3 { font-size: 0.95rem; }
       .card p { font-size: 0.85rem; }
 
-      #chatbot-container {
-        width: 260px;
-        height: 320px;
-        bottom: 10px;
-        right: 10px;
-      }
-
       df-messenger {
-        --df-messenger-chat-window-height: 320px !important;
-        --df-messenger-chat-window-width: 260px !important;
+        width: 220px !important;
+        height: 280px !important;
+        max-width: 220px !important;
+        max-height: 280px !important;
+        min-width: 220px !important;
+        min-height: 280px !important;
+        transform: scale(0.75) !important;
+        transform-origin: bottom right !important;
+        bottom: 10px !important;
+        right: 10px !important;
       }
 
       #contact p { font-size: 0.9rem; }
     }
 
     @media (max-width: 375px) {
-      #chatbot-container {
-        width: 240px;
-        height: 300px;
-        bottom: 8px;
-        right: 8px;
-      }
-
       df-messenger {
-        --df-messenger-chat-window-height: 300px !important;
-        --df-messenger-chat-window-width: 240px !important;
+        width: 200px !important;
+        height: 260px !important;
+        max-width: 200px !important;
+        max-height: 260px !important;
+        min-width: 200px !important;
+        min-height: 260px !important;
+        transform: scale(0.7) !important;
+        transform-origin: bottom right !important;
+        bottom: 8px !important;
+        right: 8px !important;
+      }
+    }
+
+    /* Nuclear option - override everything in shadow DOM */
+    @media (max-width: 768px) {
+      df-messenger * {
+        max-width: inherit !important;
+        max-height: inherit !important;
+      }
+      
+      df-messenger::part(*) {
+        max-width: inherit !important;
+        max-height: inherit !important;
       }
     }
   </style>
@@ -221,16 +228,14 @@
     <p>&copy; 2025 TheoEats. All Rights Reserved.</p>
   </footer>
 
-  <!-- Chatbot with mobile override wrapper -->
-  <div id="chatbot-container">
-    <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
-    <df-messenger
-      intent="WELCOME"
-      chat-title="TheoBot"
-      agent-id="e1af3028-ec3a-4d28-955a-6b1823e750fd"
-      language-code="en">
-    </df-messenger>
-  </div>
+  <!-- Chatbot -->
+  <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
+  <df-messenger
+    intent="WELCOME"
+    chat-title="TheoBot"
+    agent-id="e1af3028-ec3a-4d28-955a-6b1823e750fd"
+    language-code="en">
+  </df-messenger>
 
   <!-- JS -->
   <script>
@@ -282,9 +287,80 @@
       }
     });
 
-    // Logging for visibility in console
+    // AGGRESSIVE mobile size override with multiple approaches
     document.addEventListener("DOMContentLoaded", function () {
       console.log("TheoEats index.html loaded successfully.");
+      
+      if (window.innerWidth <= 768) {
+        const messenger = document.querySelector('df-messenger');
+        
+        // Method 1: Direct style injection
+        const injectStyles = () => {
+          const style = document.createElement('style');
+          style.innerHTML = `
+            @media (max-width: 768px) {
+              df-messenger {
+                position: fixed !important;
+                bottom: 10px !important;
+                right: 10px !important;
+                width: 240px !important;
+                height: 280px !important;
+                max-width: 240px !important;
+                max-height: 280px !important;
+                transform: scale(0.8) !important;
+                z-index: 9999 !important;
+              }
+            }
+          `;
+          document.head.appendChild(style);
+        };
+        
+        // Method 2: Force attributes
+        const forceAttributes = () => {
+          if (messenger) {
+            messenger.setAttribute('style', 'width: 240px !important; height: 280px !important; transform: scale(0.8) !important; position: fixed !important; bottom: 10px !important; right: 10px !important;');
+            messenger.style.setProperty('width', '240px', 'important');
+            messenger.style.setProperty('height', '280px', 'important');
+            messenger.style.setProperty('transform', 'scale(0.8)', 'important');
+            messenger.style.setProperty('max-width', '240px', 'important');
+            messenger.style.setProperty('max-height', '280px', 'important');
+          }
+        };
+        
+        // Method 3: Shadow DOM override
+        const overrideShadowDOM = () => {
+          if (messenger && messenger.shadowRoot) {
+            try {
+              const chatWrapper = messenger.shadowRoot.querySelector('[role="dialog"]') || 
+                                messenger.shadowRoot.querySelector('.chat-wrapper') ||
+                                messenger.shadowRoot.querySelector('.df-messenger-chat');
+              
+              if (chatWrapper) {
+                chatWrapper.style.width = '240px';
+                chatWrapper.style.height = '280px';
+                chatWrapper.style.maxWidth = '240px';
+                chatWrapper.style.maxHeight = '280px';
+                chatWrapper.style.transform = 'scale(0.8)';
+              }
+            } catch (e) {
+              console.log('Shadow DOM access denied');
+            }
+          }
+        };
+        
+        injectStyles();
+        setTimeout(forceAttributes, 500);
+        setTimeout(overrideShadowDOM, 1000);
+        setTimeout(forceAttributes, 2000);
+        setTimeout(overrideShadowDOM, 3000);
+        
+        // Keep trying every 2 seconds
+        setInterval(() => {
+          forceAttributes();
+          overrideShadowDOM();
+        }, 2000);
+      }
+      
       if (messenger) {
         messenger.addEventListener("load", () => {
           console.log("Chatbot loaded and visible.");
