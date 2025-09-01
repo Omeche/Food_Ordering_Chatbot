@@ -130,11 +130,9 @@
     .card h3 { font-size: 1rem; }
     .card p { font-size: 0.9rem; }
 
-    df-messenger {
-      width: 80vw !important;
-      height: 78vh !important;
-      max-width: none !important;
-      max-height: none !important;
+    df-messenger::part(chat-window) {
+      width: 50vw !important;
+      height: 50vh !important;
       position: fixed !important;
       bottom: 135px !important;
       right: 0px !important;
@@ -317,6 +315,18 @@
           const button = shadow.querySelector('button');
           if (button) {
             button.click();
+          }
+          // Style the chat window
+          const chatWindow = shadow.querySelector('.es-window-container');
+          if (chatWindow) {
+            chatWindow.style.width = '50vw';
+            chatWindow.style.height = '50vh';
+            chatWindow.style.position = 'fixed';
+            chatWindow.style.bottom = '135px';
+            chatWindow.style.right = '0px';
+            chatWindow.style.borderRadius = '40px';
+            chatWindow.style.overflow = 'hidden';
+            chatWindow.style.zIndex = '999';
           }
         }
       }, 500);
