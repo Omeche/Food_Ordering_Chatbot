@@ -135,41 +135,35 @@
       display: block;
     }
     
-    .chat-container {
-      display: none;
-      position: fixed;
-      bottom: 90px;
-      right: 20px;
-      width: 300px;
-      height: 350px;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 5px 25px rgba(0,0,0,0.4);
-      z-index: 997;
-      transition: all 0.3s ease;
+    /* Chat toggle for mobile */
+    .chat-minimized .df-messenger-wrapper {
+      height: 60px !important;
+      width: 60px !important;
+      bottom: 20px !important;
+      right: 20px !important;
+      border-radius: 50% !important;
+      overflow: hidden !important;
     }
     
-    .chat-container iframe {
-      width: 100%;
-      height: 100%;
-      border: none;
+    .chat-minimized df-messenger {
+      bottom: 0 !important;
+      right: 0 !important;
+      width: 100% !important;
+      height: 100% !important;
     }
     
-    .chat-close {
-      position: absolute;
-      top: 10px;
-      right: 10px;
-      background: rgba(0,0,0,0.5);
-      color: white;
-      width: 25px;
-      height: 25px;
-      border-radius: 50%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-size: 14px;
-      cursor: pointer;
-      z-index: 999;
+    .chat-minimized df-messenger::part(chat-button) {
+      width: 100% !important;
+      height: 100% !important;
+      border-radius: 50% !important;
+    }
+    
+    .chat-minimized df-messenger::part(chat-title-bar) {
+      display: none !important;
+    }
+    
+    .chat-minimized df-messenger::part(chat-box) {
+      display: none !important;
     }
 
     /* Mobile Responsiveness */
@@ -187,23 +181,50 @@
       .card h3 { font-size: 1rem; }
       .card p { font-size: 0.9rem; }
 
-      /* Hide the default chatbot on mobile */
+      /* Mobile chatbot styling */
       df-messenger {
-        display: none !important;
+        width: calc(100vw - 30px) !important;
+        max-width: 380px !important;
+        height: 60vh !important;
+        max-height: 500px !important;
+        bottom: 15px !important;
+        right: 15px !important;
       }
       
-      /* Show our mobile chat button */
+      /* Show our mobile chat button when minimized */
       .mobile-chat-button {
         display: flex;
       }
       
-      /* Adjust chat container for mobile */
-      .chat-container {
-        width: calc(100vw - 40px);
-        max-width: 380px;
-        height: 40vh;
-        bottom: 90px;
-        right: 20px;
+      /* Initially minimize the chatbot on mobile */
+      .df-messenger-wrapper {
+        height: 60px !important;
+        width: 60px !important;
+        bottom: 20px !important;
+        right: 20px !important;
+        border-radius: 50% !important;
+        overflow: hidden !important;
+      }
+      
+      df-messenger {
+        bottom: 0 !important;
+        right: 0 !important;
+        width: 100% !important;
+        height: 100% !important;
+      }
+      
+      df-messenger::part(chat-button) {
+        width: 100% !important;
+        height: 100% !important;
+        border-radius: 50% !important;
+      }
+      
+      df-messenger::part(chat-title-bar) {
+        display: none !important;
+      }
+      
+      df-messenger::part(chat-box) {
+        display: none !important;
       }
 
       #contact p { font-size: 0.95rem; line-height: 1.6; text-align: center; }
@@ -223,11 +244,13 @@
       .card h3 { font-size: 0.95rem; }
       .card p { font-size: 0.85rem; }
 
-      .chat-container {
-        width: calc(100vw - 30px);
-        height: 35vh;
-        bottom: 80px;
-        right: 15px;
+      df-messenger {
+        width: calc(100vw - 20px) !important;
+        max-width: 340px !important;
+        height: 55vh !important;
+        max-height: 450px !important;
+        bottom: 10px !important;
+        right: 10px !important;
       }
       
       .mobile-chat-button {
@@ -241,11 +264,12 @@
     }
 
     @media (max-width: 375px) {
-      .chat-container {
-        width: calc(100vw - 20px);
-        height: 30vh;
-        bottom: 70px;
-        right: 10px;
+      df-messenger {
+        width: calc(100vw - 16px) !important;
+        height: 50vh !important;
+        max-height: 400px !important;
+        bottom: 8px !important;
+        right: 8px !important;
       }
       
       .mobile-chat-button {
@@ -289,14 +313,8 @@
   <div class="mobile-chat-button" id="mobileChatButton">
     <span>💬</span>
   </div>
-  
-  <!-- Mobile Chat Container -->
-  <div class="chat-container" id="chatContainer">
-    <div class="chat-close" id="chatClose">✕</div>
-    <iframe id="chatIframe" src="about:blank"></iframe>
-  </div>
 
-  <!-- Chatbot for Desktop -->
+  <!-- Chatbot -->
   <script src="https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.js?v=1"></script>
   <df-messenger
     intent="WELCOME"
@@ -333,70 +351,76 @@
 
     // Mobile chat functionality
     const mobileChatButton = document.getElementById('mobileChatButton');
-    const chatContainer = document.getElementById('chatContainer');
-    const chatIframe = document.getElementById('chatIframe');
-    const chatClose = document.getElementById('chatClose');
+    const dfMessenger = document.querySelector('df-messenger');
     
-    // Load chatbot in iframe when button is clicked
-    mobileChatButton.addEventListener('click', function() {
-      if (chatContainer.style.display === 'block') {
-        chatContainer.style.display = 'none';
+    // Function to toggle chatbot visibility
+    function toggleChat() {
+      if (dfMessenger.hasAttribute('opened')) {
+        // If chat is open, close it and show the button
+        dfMessenger.removeAttribute('opened');
+        document.body.classList.add('chat-minimized');
       } else {
-        chatContainer.style.display = 'block';
-        // Load the chatbot if not already loaded
-        if (chatIframe.src === 'about:blank') {
-          chatIframe.src = 'https://www.gstatic.com/dialogflow-console/fast/messenger/bootstrap.html?v=1&title=TheoBot&agentId=e1af3028-ec3a-4d28-955a-6b1823e750fd&languageCode=en';
-        }
+        // If chat is closed, open it and hide the button
+        dfMessenger.setAttribute('opened', '');
+        document.body.classList.remove('chat-minimized');
       }
-    });
+    }
     
-    // Close chat when X is clicked
-    chatClose.addEventListener('click', function() {
-      chatContainer.style.display = 'none';
-    });
-    
-    // Close chat when clicking outside (optional)
-    document.addEventListener('click', function(event) {
-      if (chatContainer.style.display === 'block' && 
-          !chatContainer.contains(event.target) && 
-          event.target !== mobileChatButton &&
-          !mobileChatButton.contains(event.target)) {
-        chatContainer.style.display = 'none';
+    // Initialize the chatbot to be minimized on mobile
+    function initChatbot() {
+      if (window.innerWidth <= 768) {
+        document.body.classList.add('chat-minimized');
+        mobileChatButton.style.display = 'flex';
+        
+        // Add click event to the mobile chat button
+        mobileChatButton.addEventListener('click', toggleChat);
+        
+        // Also close chat when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+          if (dfMessenger.hasAttribute('opened') && 
+              !dfMessenger.contains(event.target) && 
+              event.target !== mobileChatButton &&
+              !mobileChatButton.contains(event.target)) {
+            toggleChat();
+          }
+        });
       }
-    });
+    }
+    
+    // Initialize on load and on resize
+    window.addEventListener('load', initChatbot);
+    window.addEventListener('resize', initChatbot);
 
     // Save order updates in localStorage so cart.html can read
     const messenger = document.querySelector('df-messenger');
-    if (messenger) {
-      messenger.addEventListener('df-response-received', function(event) {
-        const res = event.detail.response.queryResult;
-        if (!res) return;
-        const txt = res.fulfillmentText || "";
+    messenger.addEventListener('df-response-received', function(event) {
+      const res = event.detail.response.queryResult;
+      if (!res) return;
+      const txt = res.fulfillmentText || "";
 
-        if (
-          txt.includes("Order updated") || txt.includes("Order cancelled") ||
-          txt.includes("Order completed") || txt.includes("Order placed") ||
-          txt.includes("Your Order ID")
-        ) {
-          const itemsMatch = txt.match(/Current items: (.+?)\. Total: ₦(\d+)/);
-          if (!itemsMatch) {
-            localStorage.setItem("order", JSON.stringify({ items: [], total: 0 }));
-            return;
-          }
-          const itemsStr = itemsMatch[1];
-          const total = itemsMatch[2];
-          const items = itemsStr.split(", ").map(x => x.trim());
-          localStorage.setItem("order", JSON.stringify({ items, total }));
+      if (
+        txt.includes("Order updated") || txt.includes("Order cancelled") ||
+        txt.includes("Order completed") || txt.includes("Order placed") ||
+        txt.includes("Your Order ID")
+      ) {
+        const itemsMatch = txt.match(/Current items: (.+?)\. Total: ₦(\d+)/);
+        if (!itemsMatch) {
+          localStorage.setItem("order", JSON.stringify({ items: [], total: 0 }));
+          return;
         }
-      });
-    }
+        const itemsStr = itemsMatch[1];
+        const total = itemsMatch[2];
+        const items = itemsStr.split(", ").map(x => x.trim());
+        localStorage.setItem("order", JSON.stringify({ items, total }));
+      }
+    });
 
     // Logging for visibility in console
     document.addEventListener("DOMContentLoaded", function () {
       console.log("TheoEats index.html loaded successfully.");
       if (messenger) {
         messenger.addEventListener("load", () => {
-          console.log("Desktop chatbot loaded and visible.");
+          console.log("Chatbot loaded and visible.");
         });
       }
     });
