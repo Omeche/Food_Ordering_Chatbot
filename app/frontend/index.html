@@ -351,13 +351,56 @@
         
         injectStyles();
         
-        // Force welcome message to trigger
+        // Force welcome message to show as bubble/line
         setTimeout(() => {
           if (messenger) {
+            // Method 1: Try triggering welcome intent
             messenger.setAttribute('intent', 'WELCOME');
-            // Trigger welcome message programmatically
-            const event = new CustomEvent('df-messenger-loaded');
-            messenger.dispatchEvent(event);
+            
+            // Method 2: Force trigger welcome event
+            try {
+              messenger.renderCustomText('Hello! Welcome to TheoEats! 👋 How can I help you today?');
+            } catch (e) {
+              console.log('Custom text failed');
+            }
+            
+            // Method 3: Simulate welcome message via shadow DOM
+            setTimeout(() => {
+              try {
+                if (messenger.shadowRoot) {
+                  const messageContainer = messenger.shadowRoot.querySelector('.df-messenger-chat-bubble') ||
+                                         messenger.shadowRoot.querySelector('.chat-bubble') ||
+                                         messenger.shadowRoot.querySelector('.message-container');
+                  
+                  if (messageContainer) {
+                    // Create welcome bubble if it doesn't exist
+                    const welcomeBubble = document.createElement('div');
+                    welcomeBubble.innerHTML = 'Hello! Welcome to TheoEats! 👋';
+                    welcomeBubble.style.cssText = `
+                      position: absolute;
+                      bottom: 70px;
+                      right: 0;
+                      background: #075E54;
+                      color: white;
+                      padding: 8px 12px;
+                      border-radius: 15px 15px 5px 15px;
+                      font-size: 14px;
+                      max-width: 200px;
+                      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+                      z-index: 1000;
+                    `;
+                    messageContainer.appendChild(welcomeBubble);
+                    
+                    // Hide after 5 seconds
+                    setTimeout(() => {
+                      welcomeBubble.style.display = 'none';
+                    }, 5000);
+                  }
+                }
+              } catch (e) {
+                console.log('Welcome bubble creation failed');
+              }
+            }, 2000);
           }
         }, 1000);
         
