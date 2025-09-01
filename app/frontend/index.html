@@ -303,11 +303,11 @@
                 position: fixed !important;
                 bottom: 10px !important;
                 right: 10px !important;
-                width: 240px !important;
-                height: 280px !important;
-                max-width: 240px !important;
-                max-height: 280px !important;
-                transform: scale(0.8) !important;
+                width: 300px !important;
+                height: 350px !important;
+                max-width: 300px !important;
+                max-height: 350px !important;
+                transform: scale(0.85) !important;
                 z-index: 9999 !important;
               }
             }
@@ -318,12 +318,12 @@
         // Method 2: Force attributes
         const forceAttributes = () => {
           if (messenger) {
-            messenger.setAttribute('style', 'width: 240px !important; height: 280px !important; transform: scale(0.8) !important; position: fixed !important; bottom: 10px !important; right: 10px !important;');
-            messenger.style.setProperty('width', '240px', 'important');
-            messenger.style.setProperty('height', '280px', 'important');
-            messenger.style.setProperty('transform', 'scale(0.8)', 'important');
-            messenger.style.setProperty('max-width', '240px', 'important');
-            messenger.style.setProperty('max-height', '280px', 'important');
+            messenger.setAttribute('style', 'width: 300px !important; height: 350px !important; transform: scale(0.85) !important; position: fixed !important; bottom: 10px !important; right: 10px !important;');
+            messenger.style.setProperty('width', '300px', 'important');
+            messenger.style.setProperty('height', '350px', 'important');
+            messenger.style.setProperty('transform', 'scale(0.85)', 'important');
+            messenger.style.setProperty('max-width', '300px', 'important');
+            messenger.style.setProperty('max-height', '350px', 'important');
           }
         };
         
@@ -336,11 +336,11 @@
                                 messenger.shadowRoot.querySelector('.df-messenger-chat');
               
               if (chatWrapper) {
-                chatWrapper.style.width = '240px';
-                chatWrapper.style.height = '280px';
-                chatWrapper.style.maxWidth = '240px';
-                chatWrapper.style.maxHeight = '280px';
-                chatWrapper.style.transform = 'scale(0.8)';
+                chatWrapper.style.width = '300px';
+                chatWrapper.style.height = '350px';
+                chatWrapper.style.maxWidth = '300px';
+                chatWrapper.style.maxHeight = '350px';
+                chatWrapper.style.transform = 'scale(0.85)';
               }
             } catch (e) {
               console.log('Shadow DOM access denied');
