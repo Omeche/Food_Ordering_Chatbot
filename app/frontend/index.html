@@ -351,58 +351,58 @@
         
         injectStyles();
         
-        // Force welcome message to show as bubble/line
+        // Create custom welcome message bubble for mobile
         setTimeout(() => {
           if (messenger) {
-            // Method 1: Try triggering welcome intent
-            messenger.setAttribute('intent', 'WELCOME');
+            // Create a custom welcome bubble outside the messenger
+            const welcomeBubble = document.createElement('div');
+            welcomeBubble.id = 'custom-welcome-bubble';
+            welcomeBubble.innerHTML = 'Hello! Welcome to TheoEats! 👋';
+            welcomeBubble.style.cssText = `
+              position: fixed;
+              bottom: 85px;
+              right: 20px;
+              background: #075E54;
+              color: white;
+              padding: 10px 15px;
+              border-radius: 15px 15px 5px 15px;
+              font-size: 14px;
+              font-family: 'Roboto', sans-serif;
+              max-width: 200px;
+              box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+              z-index: 1001;
+              animation: fadeInUp 0.5s ease;
+              cursor: pointer;
+            `;
             
-            // Method 2: Force trigger welcome event
-            try {
-              messenger.renderCustomText('Hello! Welcome to TheoEats! 👋 How can I help you today?');
-            } catch (e) {
-              console.log('Custom text failed');
-            }
-            
-            // Method 3: Simulate welcome message via shadow DOM
-            setTimeout(() => {
-              try {
-                if (messenger.shadowRoot) {
-                  const messageContainer = messenger.shadowRoot.querySelector('.df-messenger-chat-bubble') ||
-                                         messenger.shadowRoot.querySelector('.chat-bubble') ||
-                                         messenger.shadowRoot.querySelector('.message-container');
-                  
-                  if (messageContainer) {
-                    // Create welcome bubble if it doesn't exist
-                    const welcomeBubble = document.createElement('div');
-                    welcomeBubble.innerHTML = 'Hello! Welcome to TheoEats! 👋';
-                    welcomeBubble.style.cssText = `
-                      position: absolute;
-                      bottom: 70px;
-                      right: 0;
-                      background: #075E54;
-                      color: white;
-                      padding: 8px 12px;
-                      border-radius: 15px 15px 5px 15px;
-                      font-size: 14px;
-                      max-width: 200px;
-                      box-shadow: 0 2px 10px rgba(0,0,0,0.3);
-                      z-index: 1000;
-                    `;
-                    messageContainer.appendChild(welcomeBubble);
-                    
-                    // Hide after 5 seconds
-                    setTimeout(() => {
-                      welcomeBubble.style.display = 'none';
-                    }, 5000);
-                  }
-                }
-              } catch (e) {
-                console.log('Welcome bubble creation failed');
+            // Add animation
+            const keyframes = `
+              @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
               }
-            }, 2000);
+            `;
+            const styleSheet = document.createElement('style');
+            styleSheet.textContent = keyframes;
+            document.head.appendChild(styleSheet);
+            
+            document.body.appendChild(welcomeBubble);
+            
+            // Hide bubble when clicked or after 8 seconds
+            welcomeBubble.addEventListener('click', () => {
+              welcomeBubble.style.display = 'none';
+              // Open the chatbot
+              messenger.click();
+            });
+            
+            setTimeout(() => {
+              if (welcomeBubble) {
+                welcomeBubble.style.opacity = '0';
+                setTimeout(() => welcomeBubble.remove(), 300);
+              }
+            }, 8000);
           }
-        }, 1000);
+        }, 2000);
         
         setTimeout(forceAttributes, 500);
         setTimeout(overrideShadowDOM, 1000);
