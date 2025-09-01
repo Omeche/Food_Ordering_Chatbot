@@ -87,7 +87,7 @@
 
     footer { text-align: center; padding: 15px; background: #075E54; color: white; font-size: 0.85rem; margin-top: 40px; }
 
-    /* Chatbot Theme */
+    /* Chatbot Theme - Desktop */
     df-messenger {
       --df-messenger-bot-message: #075E54;
       --df-messenger-user-message: #25d366;
@@ -110,42 +110,39 @@
       border-radius: 50% !important;
     }
 
-    df-messenger::part(chat-window) {
-      width: 300px !important;
-      height: 400px !important;
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      header { padding: 12px 15px; }
+      header h1 { font-size: 1.3rem; }
+      nav a { margin-left: 12px; font-size: 0.9rem; }
+
+      section { padding: 25px 15px; }
+      h2 { font-size: 1.6rem; margin-bottom: 20px; }
+
+      .menu-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+      .card { padding: 12px; }
+      .card img { height: 140px; }
+      .card h3 { font-size: 1rem; }
+      .card p { font-size: 0.9rem; }
+
+      /* Mobile chatbot - compact and non-intrusive */
+      df-messenger {
+        bottom: 15px !important;
+        right: 15px !important;
+        width: 280px !important;
+        height: 350px !important;
+        max-width: calc(100vw - 30px) !important;
+      }
+
+      /* When chatbot is minimized, show smaller chat button */
+      df-messenger[chat-open="false"] {
+        width: 60px !important;
+        height: 60px !important;
+      }
+
+      #contact p { font-size: 0.95rem; line-height: 1.6; text-align: center; }
+      footer { font-size: 0.85rem; padding: 15px; }
     }
-
-  /* Mobile Responsiveness */
-  @media (max-width: 768px) {
-    header { padding: 12px 15px; }
-    header h1 { font-size: 1.3rem; }
-    nav a { margin-left: 12px; font-size: 0.9rem; }
-
-    section { padding: 25px 15px; }
-    h2 { font-size: 1.6rem; margin-bottom: 20px; }
-
-    .menu-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
-    .card { padding: 12px; }
-    .card img { height: 140px; }
-    .card h3 { font-size: 1rem; }
-    .card p { font-size: 0.9rem; }
-
-    df-messenger {
-      width: 50vw !important;
-      height: 50vh !important;
-      position: fixed !important;
-      bottom: 135px !important;
-      right: 0px !important;
-      left: auto !important;
-      top: auto !important;
-      border-radius: 40px !important;
-      overflow: hidden !important;
-      z-index: 999;
-    }
-
-    #contact p { font-size: 0.95rem; line-height: 1.6; text-align: center; }
-    footer { font-size: 0.85rem; padding: 15px; }
-  }
 
     @media (max-width: 480px) {
       header { padding: 10px 12px; }
@@ -160,24 +157,55 @@
       .card h3 { font-size: 0.95rem; }
       .card p { font-size: 0.85rem; }
 
+      /* Smaller mobile screens - more compact chatbot */
       df-messenger {
-        width: 150px !important;
-        height: 120px !important;
+        width: 260px !important;
+        height: 320px !important;
+        max-width: calc(100vw - 20px) !important;
         bottom: 10px !important;
         right: 10px !important;
-        z-index: 999 !important;
+      }
+
+      /* Minimized state on small screens */
+      df-messenger[chat-open="false"] {
+        width: 55px !important;
+        height: 55px !important;
       }
 
       #contact p { font-size: 0.9rem; }
     }
 
     @media (max-width: 375px) {
+      /* Very small screens - keep chatbot compact */
       df-messenger {
-        width: 130px !important;
-        height: 100px !important;
+        width: 240px !important;
+        height: 300px !important;
+        max-width: calc(100vw - 16px) !important;
         bottom: 8px !important;
         right: 8px !important;
-        z-index: 999 !important;
+      }
+
+      df-messenger[chat-open="false"] {
+        width: 50px !important;
+        height: 50px !important;
+      }
+    }
+
+    /* Additional mobile optimizations */
+    @media (max-width: 768px) {
+      /* Ensure chatbot doesn't interfere with scrolling */
+      body {
+        padding-bottom: 80px; /* Space for chatbot button when minimized */
+      }
+      
+      /* Make menu cards more touch-friendly */
+      .card {
+        min-height: 200px;
+        cursor: pointer;
+      }
+      
+      .card:active {
+        transform: scale(0.98);
       }
     }
   </style>
@@ -274,85 +302,9 @@
       if (messenger) {
         messenger.addEventListener("load", () => {
           console.log("Chatbot loaded and visible.");
-          // Resize chatbot on mobile
-          resizeChatbot();
-          // Open chat on mobile
-          openChatOnMobile();
         });
       }
     });
-
-  // Function to resize chatbot on mobile
-  function resizeChatbot() {
-    const messenger = document.querySelector('df-messenger');
-    if (!messenger) return;
-    const width = window.innerWidth;
-    if (width <= 375) {
-      messenger.style.width = '80px';
-      messenger.style.height = '60px';
-    } else if (width <= 480) {
-      messenger.style.width = '100px';
-      messenger.style.height = '80px';
-    } else if (width <= 768) {
-      messenger.style.width = '120px';
-      messenger.style.height = '100px';
-    }
-    // Force update
-    setTimeout(() => {
-      messenger.style.display = 'none';
-      messenger.style.display = 'block';
-    }, 100);
-  }
-
-  // Function to open chat on mobile
-  function openChatOnMobile() {
-    const messenger = document.querySelector('df-messenger');
-    if (!messenger || window.innerWidth > 768) return;
-    // Wait for shadow root
-    setTimeout(() => {
-      const shadow = messenger.shadowRoot;
-      if (shadow) {
-        const button = shadow.querySelector('button');
-        if (button) {
-          button.click();
-        }
-        // Style the chat window to be very small initially
-        const chatWindow = shadow.querySelector('.es-window-container');
-        if (chatWindow) {
-          chatWindow.style.width = '80px';
-          chatWindow.style.height = '60px';
-          chatWindow.style.position = 'fixed';
-          chatWindow.style.bottom = '135px';
-          chatWindow.style.right = '0px';
-          chatWindow.style.borderRadius = '40px';
-          chatWindow.style.overflow = 'hidden';
-          chatWindow.style.zIndex = '999';
-        }
-      }
-    }, 500);
-  }
-
-  // Resize on window resize
-  window.addEventListener('resize', resizeChatbot);
-
-  // Show welcome message on page load by opening chat and sending welcome intent
-  document.addEventListener('DOMContentLoaded', () => {
-    const messenger = document.querySelector('df-messenger');
-    if (!messenger) return;
-    // Open chat window
-    setTimeout(() => {
-      const shadow = messenger.shadowRoot;
-      if (shadow) {
-        const button = shadow.querySelector('button');
-        if (button) {
-          button.click();
-        }
-        // Send welcome intent message programmatically if possible
-        // Note: Dialogflow Messenger does not provide direct API to send intent programmatically,
-        // so we rely on the initial intent attribute in df-messenger tag.
-      }
-    }, 500);
-  });
   </script>
 </body>
 </html>
