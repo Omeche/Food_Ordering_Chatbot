@@ -234,7 +234,8 @@
     intent="WELCOME"
     chat-title="TheoBot"
     agent-id="e1af3028-ec3a-4d28-955a-6b1823e750fd"
-    language-code="en">
+    language-code="en"
+    wait-open="false">
   </df-messenger>
 
   <!-- JS -->
@@ -349,6 +350,17 @@
         };
         
         injectStyles();
+        
+        // Force welcome message to trigger
+        setTimeout(() => {
+          if (messenger) {
+            messenger.setAttribute('intent', 'WELCOME');
+            // Trigger welcome message programmatically
+            const event = new CustomEvent('df-messenger-loaded');
+            messenger.dispatchEvent(event);
+          }
+        }, 1000);
+        
         setTimeout(forceAttributes, 500);
         setTimeout(overrideShadowDOM, 1000);
         setTimeout(forceAttributes, 2000);
