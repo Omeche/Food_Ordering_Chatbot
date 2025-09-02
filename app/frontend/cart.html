@@ -365,13 +365,12 @@
           const data = await response.json();
           return data;
         } else {
-          console.log('No active order found or error fetching order');
-          return { items: [], total: 0 };
+          throw new Error('API endpoint not available');
         }
       } catch (error) {
-        console.error('Error fetching order:', error);
+        console.log('Using localStorage fallback:', error.message);
         // Fallback to localStorage if backend fails
-        return JSON.parse(localStorage.getItem("order")) || { items: [], total: 0 };
+        return null; // Return null to indicate we should use localStorage
       }
     }
 
