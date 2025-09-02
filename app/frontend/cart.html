@@ -343,131 +343,59 @@
     const totalDiv = document.getElementById("cart-total");
     const checkoutBtn = document.getElementById("checkout-btn");
     
-    // Get session ID (you might need to adjust this based on how you store session)
-    function getSessionId() {
-      // Try to get from localStorage first
-      let sessionId = localStorage.getItem('sessionId');
-      if (!sessionId) {
-        // Generate a simple session ID if none exists
-        sessionId = 'session-' + Date.now() + '-' + Math.random().toString(36).substr(2, 9);
-        localStorage.setItem('sessionId', sessionId);
-      }
-      return sessionId;
-    }
+    const order = JSON.parse(localStorage.getItem("order")) || { items: [], total: 0 };
 
-    // Fetch current order from backend
-    async function fetchOrderFromBackend() {
-      try {
-        const sessionId = getSessionId();
-        const response = await fetch(`/api/order/${sessionId}`);
-        
-        if (response.ok) {
-          const data = await response.json();
-          return data;
-        } else {
-          throw new Error('API endpoint not available');
-        }
-      } catch (error) {
-        console.log('Using localStorage fallback:', error.message);
-        // Fallback to localStorage if backend fails
-        return null; // Return null to indicate we should use localStorage
-      }
-    }
+    cartDiv.innerHTML = "";
+    if (order.items.length === 0) {
+      cartDiv.innerHTML = `
+        <div class="empty-cart">
+          <h3>Your cart is empty</h3>
+          <p>Add some items from the menu to get started!</p>
+        </div>
+      `;
+      checkoutBtn.disabled = true;
+      checkoutBtn.style.display = 'none';
+    } else {
+      checkoutBtn.disabled = false;
+      checkoutBtn.style.display = 'block';
+      
+      order.items.forEach(entry => {
+        const match = entry.match(/(.+)\((\d+)\)/); // e.g. Fish(2) or Beef(1)
+        if (!match) return;
+        const name = match[1].trim();
+        const qty = parseInt(match[2]);
+        const item = menu[name];
+        if (!item) return;
 
-    // Convert backend data format to display format
-    function formatOrderForDisplay(backendOrder) {
-      if (!backendOrder || !backendOrder.items) {
-        return { items: [], total: 0 };
-      }
-      
-      const items = backendOrder.items.map(item => {
-        const foodName = item.food_item.charAt(0).toUpperCase() + item.food_item.slice(1);
-        return `${foodName}(${item.quantity})`;
-      });
-      
-      const total = backendOrder.items.reduce((sum, item) => {
-        return sum + parseFloat(item.total_price);
-      }, 0);
-      
-      return { items, total };
-    }
-
-    // Display cart function
-    async function displayCart() {
-      cartDiv.innerHTML = '<div style="text-align: center; padding: 20px;">Loading...</div>';
-      
-      const backendOrder = await fetchOrderFromBackend();
-      const order = formatOrderForDisplay(backendOrder);
-
-      cartDiv.innerHTML = "";
-      
-      if (order.items.length === 0) {
-        cartDiv.innerHTML = `
-          <div class="empty-cart">
-            <h3>Your cart is empty</h3>
-            <p>Add some items from the menu to get started!</p>
+        const div = document.createElement("div");
+        div.classList.add("cart-item");
+        div.innerHTML = `
+          <img src="${item.img}" alt="${name}">
+          <div class="cart-info">
+            <h3>${name}</h3>
+            <p>Qty: ${qty}</p>
           </div>
+          <div class="cart-price">₦${item.price * qty}</div>
         `;
-        checkoutBtn.disabled = true;
-        checkoutBtn.style.display = 'none';
-      } else {
-        checkoutBtn.disabled = false;
-        checkoutBtn.style.display = 'block';
-        
-        order.items.forEach(entry => {
-          const match = entry.match(/(.+)\((\d+)\)/); // e.g. Fish(2) or Beef(1)
-          if (!match) return;
-          const name = match[1].trim();
-          const qty = parseInt(match[2]);
-          const item = menu[name];
-          if (!item) return;
-
-          const div = document.createElement("div");
-          div.classList.add("cart-item");
-          div.innerHTML = `
-            <img src="${item.img}" alt="${name}">
-            <div class="cart-info">
-              <h3>${name}</h3>
-              <p>Qty: ${qty}</p>
-            </div>
-            <div class="cart-price">₦${item.price * qty}</div>
-          `;
-          cartDiv.appendChild(div);
-        });
-      }
-
-      totalDiv.textContent = `Total: ₦${Math.round(order.total)}`;
-      
-      // Update localStorage for consistency
-      localStorage.setItem("order", JSON.stringify(order));
+        cartDiv.appendChild(div);
+      });
     }
+
+    totalDiv.textContent = `Total: ₦${order.total}`;
     
     function proceedToCheckout() {
-      const order = JSON.parse(localStorage.getItem("order")) || { items: [], total: 0 };
       if (order.items.length === 0) {
         alert("Your cart is empty!");
         return;
       }
       
       // Here you can add checkout logic
-      alert(`Proceeding to checkout with total: ₦${Math.round(order.total)}`);
+      // For now, we'll show a simple alert
+      alert(`Proceeding to checkout with total: ₦${order.total}`);
       
       // You could redirect to a checkout page:
       // window.location.href = "checkout.html";
     }
-
-    // Load cart on page load
-    displayCart();
-    
-    // Refresh cart every 5 seconds to catch updates from chatbot
-    setInterval(displayCart, 5000);
-    
-    // Also refresh when page becomes visible (user switches back to tab)
-    document.addEventListener('visibilitychange', function() {
-      if (!document.hidden) {
-        displayCart();
-      }
-    });
   </script>
 </body>
 </html>
