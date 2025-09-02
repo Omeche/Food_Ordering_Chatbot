@@ -119,12 +119,44 @@
       text-align: center; 
       font-size: 1.4rem; 
       font-weight: bold; 
-      margin: 30px 0; 
+      margin: 30px 0 20px 0; 
       padding: 20px;
       background: white;
       border-radius: 15px;
       color: #128C7E;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .checkout-btn {
+      display: block;
+      width: 100%;
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 15px 30px;
+      background: linear-gradient(135deg, #25d366, #128C7E);
+      color: white;
+      text-decoration: none;
+      text-align: center;
+      border-radius: 25px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .checkout-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+      background: linear-gradient(135deg, #128C7E, #25d366);
+    }
+    
+    .checkout-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
     
     .empty-cart {
@@ -197,6 +229,12 @@
         margin: 20px 0;
         padding: 15px;
       }
+      
+      .checkout-btn {
+        padding: 12px 25px;
+        font-size: 1rem;
+        margin: 15px auto;
+      }
     }
 
     /* Small mobile devices */
@@ -246,6 +284,12 @@
         margin: 15px 0;
         padding: 12px;
       }
+      
+      .checkout-btn {
+        padding: 10px 20px;
+        font-size: 0.95rem;
+        margin: 12px auto;
+      }
     }
 
     /* Very small screens */
@@ -279,6 +323,10 @@
   <h2>Order Summary</h2>
   <div class="cart-container" id="cart"></div>
   <p class="total" id="cart-total">Total: ₦0</p>
+  
+  <button class="checkout-btn" id="checkout-btn" onclick="proceedToCheckout()">
+    Proceed to Checkout
+  </button>
 
   <script>
     const menu = {
@@ -293,40 +341,91 @@
 
     const cartDiv = document.getElementById("cart");
     const totalDiv = document.getElementById("cart-total");
-    const order = JSON.parse(localStorage.getItem("order")) || { items: [], total: 0 };
+    const checkoutBtn = document.getElementById("checkout-btn");
+    
+    // Get order from localStorage
+    let order = JSON.parse(localStorage.getItem("order")) || { items: [], total: 0 };
 
-    cartDiv.innerHTML = "";
-    if (order.items.length === 0) {
-      cartDiv.innerHTML = `
-        <div class="empty-cart">
-          <h3>Your cart is empty</h3>
-          <p>Add some items from the menu to get started!</p>
-        </div>
-      `;
-    } else {
-      order.items.forEach(entry => {
-        const match = entry.match(/(.+)\((\d+)\)/); // e.g. Fish(2)
-        if (!match) return;
-        const name = match[1].trim();
-        const qty = parseInt(match[2]);
-        const item = menu[name];
-        if (!item) return;
-
-        const div = document.createElement("div");
-        div.classList.add("cart-item");
-        div.innerHTML = `
-          <img src="${item.img}" alt="${name}">
-          <div class="cart-info">
-            <h3>${name}</h3>
-            <p>Qty: ${qty}</p>
+    function displayCart() {
+      cartDiv.innerHTML = "";
+      
+      if (order.items.length === 0) {
+        cartDiv.innerHTML = `
+          <div class="empty-cart">
+            <h3>Your cart is empty</h3>
+            <p>Add some items from the menu to get started!</p>
           </div>
-          <div class="cart-price">₦${item.price * qty}</div>
         `;
-        cartDiv.appendChild(div);
-      });
+        checkoutBtn.disabled = true;
+        checkoutBtn.style.display = 'none';
+      } else {
+        checkoutBtn.disabled = false;
+        checkoutBtn.style.display = 'block';
+        
+        // Parse items more carefully to handle quantity changes
+        const itemCounts = {};
+        
+        // Count quantities for each item
+        order.items.forEach(entry => {
+          const match = entry.match(/(.+?)\s*\((\d+)\)$/);
+          if (match) {
+            const name = match[1].trim();
+            const qty = parseInt(match[2]);
+            
+            if (itemCounts[name]) {
+              itemCounts[name] += qty;
+            } else {
+              itemCounts[name] = qty;
+            }
+          }
+        });
+        
+        // Display each unique item with its total quantity
+        Object.entries(itemCounts).forEach(([name, totalQty]) => {
+          const item = menu[name];
+          if (!item) return;
+
+          const div = document.createElement("div");
+          div.classList.add("cart-item");
+          div.innerHTML = `
+            <img src="${item.img}" alt="${name}">
+            <div class="cart-info">
+              <h3>${name}</h3>
+              <p>Qty: ${totalQty}</p>
+            </div>
+            <div class="cart-price">₦${item.price * totalQty}</div>
+          `;
+          cartDiv.appendChild(div);
+        });
+      }
+
+      totalDiv.textContent = `Total: ₦${order.total}`;
+    }
+    
+    function proceedToCheckout() {
+      if (order.items.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+      
+      // Here you can add checkout logic
+      // For now, we'll show a simple alert
+      alert(`Proceeding to checkout with total: ₦${order.total}`);
+      
+      // You could redirect to a checkout page:
+      // window.location.href = "checkout.html";
     }
 
-    totalDiv.textContent = `Total: ₦${order.total}`;
+    // Load and display cart on page load
+    displayCart();
+    
+    // Listen for storage changes (when cart is updated from other pages)
+    window.addEventListener('storage', function(e) {
+      if (e.key === 'order') {
+        order = JSON.parse(e.newValue) || { items: [], total: 0 };
+        displayCart();
+      }
+    });
   </script>
 </body>
 </html>
