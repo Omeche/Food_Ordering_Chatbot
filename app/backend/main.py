@@ -513,6 +513,26 @@ def cancel_order(parameters: dict, session_id: str):
     message = db_handler.clear_order(order_id)
     return jsonify({"fulfillmentText": message})
 
+@app.route('/api/order/<session_id>', methods=['GET'])
+def get_order(session_id):
+    try:
+        order_id = get_or_create_order_id(session_id)
+        items = get_order_items(order_id)
+        
+        return jsonify({
+            'order_id': order_id,
+            'items': [
+                {
+                    'food_item': item['food_item'],
+                    'quantity': item['quantity'],
+                    'total_price': str(item['total_price'])
+                }
+                for item in items
+            ]
+        })
+    except Exception as e:
+        return jsonify({'error': str(e)}), 404
+
 if __name__ == '__main__':
     port = int(os.environ.get('PORT', 5000))
     app.run(host='0.0.0.0', port=port, debug=False)
