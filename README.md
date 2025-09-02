@@ -1,131 +1,290 @@
-```markdown
-TheoEats Food Ordering Chatbot
+# TheoEats Food Ordering Chatbot
 
-![Python](https://img.shields.io/badge/python-3.11-blue) ![Flask](https://img.shields.io/badge/flask-2.x-orange) ![License](https://img.shields.io/badge/license-MIT-green)
+![Python](https://img.shields.io/badge/python-3.11-blue) ![Flask](https://img.shields.io/badge/flask-2.x-orange) ![MySQL](https://img.shields.io/badge/mysql-8.0-blue) ![Railway](https://img.shields.io/badge/deployed-railway-purple) ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 
-TheoEats is an end-to-end **food ordering web application** integrated with a **Dialogflow chatbot** for interactive ordering. Users can browse the menu, add items to their cart, and place orders, all managed via a Flask backend connected to a **MySQL database**. The site is deployed on **Railway** and accessible externally.
+TheoEats is a modern **food ordering web application** powered by an intelligent **Dialogflow chatbot** for seamless order management. Users can browse the menu, interact with the chatbot to place orders, manage their cart, and track orders - all backed by a robust Flask backend and MySQL database.
 
-🔗 **Live Site:** [https://foodorderingchatbot-production.up.railway.app](https://foodorderingchatbot-production.up.railway.app)
+🔗 **Live Demo:** [https://foodorderingchatbot-production.up.railway.app](https://foodorderingchatbot-production.up.railway.app)
 
+## ✨ Features
 
-Features
+- 🤖 **Smart Dialogflow Integration** - Interactive chatbot (TheoBot) for natural language ordering
+- 🍽️ **Dynamic Menu Display** - Browse food items with images and prices
+- 🛒 **Persistent Cart Management** - MySQL-backed cart sessions with real-time updates
+- 📱 **Responsive Design** - Optimized for both desktop and mobile devices
+- 🔄 **Order Tracking** - Real-time order status and session management
+- 💾 **Database Persistence** - All orders and cart data stored securely in MySQL
+- 🚀 **Cloud Deployment** - Fully deployed on Railway for 24/7 availability
 
-- Interactive **Dialogflow chatbot** for ordering and order management.
-- Browse menu items with images and prices.
-- **Cart management** fully backed by MySQL sessions.
-- Responsive design for desktop and mobile.
-- Persistent sessions to track orders per user.
+## 🛠️ Tech Stack
 
+| Component | Technology |
+|-----------|------------|
+| **Frontend** | HTML5, CSS3, JavaScript (ES6+) |
+| **Backend** | Flask (Python 3.9) |
+| **Chatbot** | Google Dialogflow |
+| **Database** | MySQL 8.0 |
+| **Deployment** | Railway Cloud Platform |
+| **Session Management** | Flask-Session with MySQL backend |
 
-Tech Stack
-
-- **Frontend:** HTML, CSS, JavaScript  
-- **Backend:** Flask (Python)  
-- **Chatbot:** Dialogflow  
-- **Database:** MySQL (`theo_eat.sql`)  
-- **Deployment:** Railway  
-
-
-Project Structure
+## 📁 Project Structure
 
 ```
-
-food-ordering\_chatbot/
+food-ordering_chatbot/
 ├── backend/
-│   ├── **init**.py
-│   ├── db\_handler.py
-│   ├── function\_handler.py
-│   ├── init\_db.py
-│   └── main.py
+│   ├── __init__.py              # Package initialization
+│   ├── main.py                  # Flask application entry point
+│   ├── db_handler.py            # Database operations and connection
+│   ├── function_handler.py      # Business logic and order processing
+│   └── init_db.py              # Database initialization and setup
 ├── frontend/
-│   ├── index.html
-│   ├── cart.html
-│   ├── \.jpg (menu images)
+│   ├── index.html              # Main landing page
+│   ├── cart.html               # Cart management interface
+│   └── images/                 # Menu item images
+│       ├── fish.jpg
+│       ├── rice.jpg
+│       └── ...
 ├── services/
-│   └── repair\_db.py
+│   └── repair_db.py            # Database maintenance utilities
 ├── database/
-│   └── theo\_eat.sql          
-├── LICENSE
-├── Procfile
-├── Railpack.toml
-├── requirements.txt
-└── runtime.txt
+│   └── theo_eat.sql            # Database schema and seed data
+├── LICENSE                     # Apache 2.0 License
+├── Procfile                    # Railway deployment configuration
+├── requirements.txt            # Python dependencies
+├── runtime.txt                 # Python runtime version
+└── README.md                   # This file
+```
 
-````
+## 🚀 Quick Start
 
-Setup & Deployment
+### Prerequisites
+- Python 3.9+
+- MySQL 8.0+
+- Git
 
-### 1. Clone the repository
+### 1. Clone the Repository
 ```bash
 git clone https://github.com/Omeche/food-ordering_chatbot.git
 cd food-ordering_chatbot
-````
-
-### 2. Create and activate virtual environment
-
-```bash
-python -m venv venv
-source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
-### 3. Install dependencies
+### 2. Set Up Virtual Environment
+```bash
+# Create virtual environment
+python -m venv venv
 
+# Activate virtual environment
+# On Windows:
+venv\Scripts\activate
+# On macOS/Linux:
+source venv/bin/activate
+```
+
+### 3. Install Dependencies
 ```bash
 pip install -r requirements.txt
 ```
 
-### 4. Setup MySQL database
+### 4. Database Setup
 
-* Import the database:
-
+#### Option A: Local MySQL Setup
 ```bash
-mysql -u your_user -p theo_eat < database/theo_eat.sql
+# Create database
+mysql -u root -p -e "CREATE DATABASE theo_eat;"
+
+# Import schema and data
+mysql -u root -p theo_eat < database/theo_eat.sql
 ```
 
-* Update `backend/db_handler.py` with your MySQL credentials.
+#### Option B: Use Railway MySQL (Recommended)
+1. Create a Railway account at [railway.app](https://railway.app)
+2. Create a new MySQL service
+3. Note your database credentials from Railway dashboard
 
-### 5. Run the Flask app locally
+### 5. Environment Configuration
+Create a `.env` file in the root directory:
+```env
+# Database Configuration
+MYSQLHOST=your_mysql_host
+MYSQLPORT=3306
+MYSQLUSER=your_mysql_user
+MYSQLPASSWORD=your_mysql_password
+MYSQLDATABASE=theo_eat
 
+# Flask Configuration
+FLASK_ENV=development
+FLASK_DEBUG=True
+SECRET_KEY=your_secret_key_here
+
+# Dialogflow Configuration (optional for local testing)
+GOOGLE_APPLICATION_CREDENTIALS=path/to/service-account.json
+```
+
+### 6. Run Locally
 ```bash
+# Start the Flask development server
 python backend/main.py
 ```
 
-* The frontend is available at `http://127.0.0.1:5000`.
-* Dialogflow interacts with your local backend if configured.
+The application will be available at `http://127.0.0.1:5000`
 
-### 6. Deploy to Railway
+## 🌐 Deployment
 
-1. Push your repo to GitHub.
-2. Connect Railway to your repo.
-3. Set environment variables (MySQL credentials, etc.) in Railway.
-4. Railway automatically deploys via `Procfile`.
-5. Update Dialogflow **fulfillment webhook URL** to your Railway-hosted site:
-   `https://foodorderingchatbot-production.up.railway.app/api/dialogflow_webhook`
+### Deploy to Railway
+
+1. **Push to GitHub**
+   ```bash
+   git add .
+   git commit -m "Initial commit"
+   git push origin main
+   ```
+
+2. **Connect Railway**
+   - Go to [railway.app](https://railway.app)
+   - Click "Deploy from GitHub repo"
+   - Select your repository
+   - Railway will automatically detect the Flask app
+
+3. **Configure Environment Variables**
+   In Railway dashboard, add:
+   - `MYSQLHOST`
+   - `MYSQLPORT`
+   - `MYSQLUSER`
+   - `MYSQLPASSWORD`
+   - `MYSQLDATABASE`
+
+4. **Update Dialogflow Webhook**
+   - Go to Dialogflow Console
+   - Navigate to Fulfillment
+   - Set webhook URL to: `https://your-railway-app.up.railway.app/api/dialogflow_webhook`
+
+## 📱 Usage
+
+1. **Visit the Application**
+   - Open [Live Demo](https://foodorderingchatbot-production.up.railway.app)
+
+2. **Interact with TheoBot**
+   - Click on the chat widget
+   - Say "Hi" or "I want to order food"
+   - Follow the chatbot's prompts to add items
+
+3. **Manage Your Order**
+   - View items in your cart
+   - Modify quantities or remove items
+   - Complete your order through the chat
+
+4. **Track Your Order**
+   - Get order confirmation
+   - Check order status via chat
+
+## 🤖 Chatbot Commands
+
+TheoBot understands natural language, but here are some example commands:
+
+- `"Hi"` or `"Hello"` - Start conversation
+- `"I want to order fish"` - Add specific item
+- `"Add 2 rice to my order"` - Add multiple items
+- `"What's in my cart?"` - View current order
+- `"Remove fish from my order"` - Remove items
+- `"Complete my order"` - Finalize order
+- `"Track my order"` - Check order status
+
+## 🔧 API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/` | GET | Main landing page |
+| `/cart` | GET | Cart management page |
+| `/api/dialogflow_webhook` | POST | Dialogflow webhook handler |
+| `/api/get_cart` | GET | Retrieve current cart items |
+| `/api/add_to_cart` | POST | Add item to cart |
+| `/api/remove_from_cart` | POST | Remove item from cart |
 
 
-## Usage
+## 🤝 Contributing
 
-1. Open the website: [Live Demo](https://foodorderingchatbot-production.up.railway.app)
-2. Interact with **TheoBot** to add items to your cart.
-3. View your cart and proceed to checkout.
-4. Orders are stored in the MySQL database per user session.
+I welcome contributions! Here's how to get started:
 
+1. **Fork the Repository**
+   ```bash
+   git fork https://github.com/Omeche/food-ordering_chatbot.git
+   ```
 
-## Contributing
+2. **Create Feature Branch**
+   ```bash
+   git checkout -b feature/amazing-feature
+   ```
 
-Contributions are welcome! Submit pull requests or issues to improve functionality, fix bugs, or enhance UI/UX.
+3. **Make Changes**
+   - Write clean, documented code
+   - Follow PEP 8 style guidelines
+   - Add tests for new features
 
+4. **Commit Changes**
+   ```bash
+   git commit -m "Add amazing feature"
+   ```
 
-## License
+5. **Push to Branch**
+   ```bash
+   git push origin feature/amazing-feature
+   ```
 
-This project is licensed under **Apache License 2.0**. See [LICENSE](LICENSE) for details.
+6. **Open Pull Request**
+   - Provide clear description of changes
+   - Reference any related issues
 
+### Development Guidelines
+- Follow Python PEP 8 style guide
+- Write meaningful commit messages
+- Add comments for complex logic
+- Update documentation for new features
+- Test thoroughly before submitting PR
 
-## Acknowledgements
+## 🐛 Troubleshooting
 
-* [Dialogflow](https://dialogflow.cloud.google.com/) – Chatbot integration
-* [Railway](https://railway.app/) – Hosting frontend, backend, and database
+### Common Issues
 
+**Database Connection Error**
+```
+Error: Can't connect to MySQL server
+```
+- Check database credentials in environment variables
+- Ensure MySQL service is running
+- Verify network connectivity
+
+**Chatbot Not Responding**
+- Check Dialogflow webhook URL
+- Verify webhook is accessible externally
+- Check Dialogflow console for errors
+
+**Port Already in Use**
+```bash
+# Kill process on port 5000
+lsof -ti:5000 | xargs kill -9
 ```
 
+## 📄 License
 
+This project is licensed under the **Apache License 2.0**. See [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **[Google Dialogflow](https://dialogflow.cloud.google.com/)** - Natural language processing and chatbot framework
+- **[Railway](https://railway.app/)** - Cloud hosting platform for seamless deployment
+- **[Flask](https://flask.palletsprojects.com/)** - Lightweight Python web framework
+- **[MySQL](https://www.mysql.com/)** - Reliable database management system
+
+## 📞 Support
+
+Need help? Here's how to get support:
+
+- 📧 **Email**: [omechetochi@gmail.com](omechetochi@gmail.com)
+- 🐛 **Issues**: [GitHub Issues](https://github.com/Omeche/food-ordering_chatbot/issues)
+- 💬 **Discussions**: [GitHub Discussions](https://github.com/Omeche/food-ordering_chatbot/discussions)
+
+---
+
+**Built with ❤️ by [Omeche](https://github.com/Omeche)**
+
+⭐ **Star this repo if you found it helpful!**
