@@ -476,7 +476,7 @@ def complete_order(parameters: dict, session_id: str):
 
         logger.info(f"Order {order_id} successfully placed for session {session_id}")
         return jsonify({
-            "fulfillmentText": f" Order {order_id} placed successfully!\n\n{chr(10).join(lines)}\n\nTotal: ₦{total}\n\nThank you for your order! We'll prepare it right away."
+            "fulfillmentText": f" Order {order_id} placed successfully!\n\n{chr(10).join(lines)}\n\nTotal: ₦{total}\n\nThank you for your order! You can navigate to 'my cart' section to view your order summary."
         })
         
     except Exception as e:
