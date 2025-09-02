@@ -347,13 +347,14 @@
     // Helper: format amounts
     const formatNaira = (n) => `₦${Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
 
-    // Get session id (stored when chat starts) or from ?session_id=
+    // Get session id from localStorage or ?session_id= query param
     function getSessionId() {
       const stored = localStorage.getItem("session_id");
       if (stored) return stored;
       const params = new URLSearchParams(window.location.search);
       const fromQuery = params.get("session_id");
       if (fromQuery) {
+        // persist for later
         localStorage.setItem("session_id", fromQuery);
         return fromQuery;
       }
@@ -379,7 +380,8 @@
       }
 
       try {
-        const res = await fetch(`/api/order/${encodeURIComponent(sessionId)}`, { credentials: "include" });
+        // call Flask endpoint
+        const res = await fetch(`/api/order/${encodeURIComponent(sessionId)}`);
         if (!res.ok) throw new Error("Failed to fetch cart from server");
         const data = await res.json();
 
@@ -392,6 +394,9 @@
               <p>Add some items from the menu to get started!</p>
             </div>
           `;
+          totalDiv.textContent = "Total: ₦0";
+          checkoutBtn.disabled = true;
+          checkoutBtn.style.display = "none";
           return;
         }
 
@@ -400,7 +405,6 @@
         items.forEach(it => {
           const name = it.food_item || "Item";
           const qty = Number(it.quantity) || 0;
-          // total_price comes back as a string (e.g. "3000.00")
           const itemTotal = Number(it.total_price) || 0;
           grandTotal += itemTotal;
 
@@ -431,6 +435,9 @@
             <p>Please refresh or try again later.</p>
           </div>
         `;
+        totalDiv.textContent = "Total: ₦0";
+        checkoutBtn.disabled = true;
+        checkoutBtn.style.display = "none";
       }
     }
 
