@@ -1,11 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>TheoEats - Order Online</title>
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
+  <!-- SEO Metadata -->
+  <meta name="description" content="Order delicious meals online with TheoEats. Fast, reliable delivery right to your doorstep." />
+  <meta name="keywords" content="TheoEats, food delivery, online ordering, meals, fast food, Nigeria" />
+  <meta name="author" content="TheoEats" />
+
+  <!-- Open Graph -->
+  <meta property="og:title" content="TheoEats - Order Online" />
+  <meta property="og:description" content="Order delicious meals online with TheoEats. Fast, reliable delivery right to your doorstep." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://theoeats.com" />
+  <meta property="og:image" content="https://theoeats.com/static/banner.jpg" />
+
+  <!-- Favicon -->
+  <link rel="icon" href="/static/favicon.ico" type="image/x-icon" />
+
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+
+  <!-- Styles -->
   <style>
     /* Global */
     body {
@@ -78,16 +96,108 @@
       --df-messenger-chat-background-color: #1e1e1e;
       --df-messenger-send-icon: #25d366;
       position: fixed;
-      bottom: 0; right: 20px; z-index: 999;
-
+      bottom: 20px; 
+      right: 20px; 
+      z-index: 999;
       width: 300px !important;
-      height: 400px !important; /* shorter height */
+      height: 400px !important;
     }
+    
     df-messenger::part(button) {
       background: linear-gradient(270deg, #25d366, #128C7E, #34b7f1);
       background-size: 400% 400%;
       animation: gradientFlow 6s ease infinite;
       border-radius: 50% !important;
+    }
+
+    /* Mobile Chat Overrides */
+    @media (max-width: 768px) {
+      header { padding: 12px 15px; }
+      header h1 { font-size: 1.3rem; }
+      nav a { margin-left: 12px; font-size: 0.9rem; }
+
+      section { padding: 25px 15px; }
+      h2 { font-size: 1.6rem; margin-bottom: 20px; }
+
+      .menu-grid { grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; }
+      .card { padding: 12px; }
+      .card img { height: 140px; }
+      .card h3 { font-size: 1rem; }
+      .card p { font-size: 0.9rem; }
+
+      /* CHATBOT ON MOBILE */
+      df-messenger {
+        bottom: 15px !important;
+        right: 15px !important;
+        width: 320px !important;
+        height: 380px !important;
+        max-width: 320px !important;
+        max-height: 380px !important;
+        min-width: 320px !important;
+        min-height: 380px !important;
+        transform: scale(0.9) !important;
+        transform-origin: bottom right !important;
+      }
+
+      #contact p { font-size: 0.95rem; line-height: 1.6; text-align: center; }
+      footer { font-size: 0.85rem; padding: 15px; }
+    }
+
+    @media (max-width: 480px) {
+      header { padding: 10px 12px; }
+      header h1 { font-size: 1.2rem; }
+      nav a { font-size: 0.85rem; margin-left: 10px; }
+      
+      section { padding: 20px 12px; }
+      h2 { font-size: 1.4rem; }
+      .menu-grid { grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; }
+      .card { padding: 10px; }
+      .card img { height: 120px; }
+      .card h3 { font-size: 0.95rem; }
+      .card p { font-size: 0.85rem; }
+
+      df-messenger {
+        width: 300px !important;
+        height: 360px !important;
+        max-width: 300px !important;
+        max-height: 360px !important;
+        min-width: 300px !important;
+        min-height: 360px !important;
+        transform: scale(0.9) !important;
+        transform-origin: bottom right !important;
+        bottom: 10px !important;
+        right: 10px !important;
+      }
+
+      #contact p { font-size: 0.9rem; }
+    }
+
+    @media (max-width: 375px) {
+      df-messenger {
+        width: 280px !important;
+        height: 340px !important;
+        max-width: 280px !important;
+        max-height: 340px !important;
+        min-width: 280px !important;
+        min-height: 340px !important;
+        transform: scale(0.9) !important;
+        transform-origin: bottom right !important;
+        bottom: 8px !important;
+        right: 8px !important;
+      }
+    }
+
+    /* Nuclear option - override everything in shadow DOM */
+    @media (max-width: 768px) {
+      df-messenger * {
+        max-width: inherit !important;
+        max-height: inherit !important;
+      }
+      
+      df-messenger::part(*) {
+        max-width: inherit !important;
+        max-height: inherit !important;
+      }
     }
   </style>
 </head>
@@ -129,8 +239,9 @@
 
   <!-- JS -->
   <script>
+    // Menu items
     const menu = [
-      { name: "Jollof Rice", price: 800, img: "jollof-rice.jpg" },
+      { name: "Jollof Rice", price: 800, img: "Jollof-rice.jpg" },
       { name: "Porridge Beans", price: 700, img: "beans-porridge.jpg" },
       { name: "Plantain", price: 400, img: "plantain.jpg" },
       { name: "Fish", price: 1200, img: "fish.jpg" },
@@ -145,34 +256,195 @@
       const div = document.createElement("div");
       div.classList.add("card");
       div.innerHTML = `
-        <img src="${item.img}" alt="${item.name}">
+        <img src="${item.img}" alt="${item.name}" onerror="this.style.display='none'">
         <h3>${item.name}</h3>
         <p>₦${item.price}</p>
       `;
       grid.appendChild(div);
     });
 
-    // Save order updates in localStorage so cart.html can read
-    const messenger = document.querySelector('df-messenger');
-    messenger.addEventListener('df-response-received', function(event) {
-      const res = event.detail.response.queryResult;
-      if (!res) return;
-      const txt = res.fulfillmentText || "";
+  document.addEventListener("DOMContentLoaded", function () {
+  // Save order updates in localStorage so cart.html can read
+  const messenger = document.querySelector('df-messenger');
+  if (!messenger) return;
 
-      if (
-        txt.includes("Order updated") || txt.includes("Order cancelled") ||
-        txt.includes("Order completed") || txt.includes("Order placed") ||
-        txt.includes("Your Order ID")
-      ) {
-        const itemsMatch = txt.match(/Current items: (.+?)\. Total: ₦(\d+)/);
-        if (!itemsMatch) {
-          localStorage.setItem("order", JSON.stringify({ items: [], total: 0 }));
-          return;
-        }
-        const itemsStr = itemsMatch[1];
-        const total = itemsMatch[2];
-        const items = itemsStr.split(", ").map(x => x.trim());
+  messenger.addEventListener('df-response-received', function(event) {
+    const res = event.detail.response.queryResult;
+    if (!res) return;
+    const txt = res.fulfillmentText || "";
+
+    if (
+      txt.includes("Order updated") || txt.includes("Order cancelled") ||
+      txt.includes("Order completed") || txt.includes("Order placed") ||
+      txt.includes("Your Order ID") || txt.includes("Removed") || txt.includes("Updated order")
+    ) {
+      let itemsMatch = null;
+      let itemsStr = "";
+      let total = "0";
+
+      // Try different patterns
+      if (txt.includes("Current items:")) {
+        itemsMatch = txt.match(/Current items: (.+?)\. Total: ₦(\d+)/);
+      } else if (txt.includes("Updated order:")) {
+        itemsMatch = txt.match(/Updated order: (.+?)\. Total: ₦(\d+)/);
+      } else if (txt.includes("placed successfully")) {
+        // For placed orders: extract items from the list
+        const lines = txt.split('\n').filter(line => line.includes('(') && line.includes(')'));
+        itemsStr = lines.map(line => line.split(' -- ')[0].trim()).join(', ');
+        const totalMatch = txt.match(/Total: ₦(\d+)/);
+        total = totalMatch ? totalMatch[1] : "0";
+      }
+
+      if (itemsMatch) {
+        itemsStr = itemsMatch[1];
+        total = itemsMatch[2];
+      }
+
+      if (txt.includes("Order cancelled") || txt.includes("Your order is now empty")) {
+        // Clear cart for cancelled or empty orders
+        localStorage.setItem("order", JSON.stringify({ items: [], total: 0 }));
+      } else if (itemsStr) {
+        const items = itemsStr.split(", ").map(x => x.trim()).filter(x => x);
         localStorage.setItem("order", JSON.stringify({ items, total }));
+      }
+      // If no itemsStr and not cancelled, do nothing (keep previous state)
+    }
+  });
+});
+
+
+    // AGGRESSIVE mobile size override with multiple approaches
+    document.addEventListener("DOMContentLoaded", function () {
+      console.log("TheoEats index.html loaded successfully.");
+      
+      if (window.innerWidth <= 768) {
+        const messenger = document.querySelector('df-messenger');
+        
+        // Direct style injection
+        const injectStyles = () => {
+          const style = document.createElement('style');
+          style.innerHTML = `
+            @media (max-width: 768px) {
+              df-messenger {
+                position: fixed !important;
+                bottom: 10px !important;
+                right: 10px !important;
+                width: 320px !important;
+                height: 380px !important;
+                max-width: 320px !important;
+                max-height: 380px !important;
+                transform: scale(0.9) !important;
+                z-index: 9999 !important;
+              }
+            }
+          `;
+          document.head.appendChild(style);
+        };
+        
+        // Force attributes
+        const forceAttributes = () => {
+          if (messenger) {
+            messenger.setAttribute('style', 'width: 320px !important; height: 380px !important; transform: scale(0.9) !important; position: fixed !important; bottom: 10px !important; right: 10px !important;');
+            messenger.style.setProperty('width', '320px', 'important');
+            messenger.style.setProperty('height', '380px', 'important');
+            messenger.style.setProperty('transform', 'scale(0.9)', 'important');
+            messenger.style.setProperty('max-width', '320px', 'important');
+            messenger.style.setProperty('max-height', '380px', 'important');
+          }
+        };
+        
+        // Shadow DOM override
+        const overrideShadowDOM = () => {
+          if (messenger && messenger.shadowRoot) {
+            try {
+              const chatWrapper = messenger.shadowRoot.querySelector('[role="dialog"]') || 
+                                messenger.shadowRoot.querySelector('.chat-wrapper') ||
+                                messenger.shadowRoot.querySelector('.df-messenger-chat');
+              
+              if (chatWrapper) {
+                chatWrapper.style.width = '320px';
+                chatWrapper.style.height = '380px';
+                chatWrapper.style.maxWidth = '320px';
+                chatWrapper.style.maxHeight = '380px';
+                chatWrapper.style.transform = 'scale(0.9)';
+              }
+            } catch (e) {
+              console.log('Shadow DOM access denied');
+            }
+          }
+        };
+        
+        injectStyles();
+        
+        // Create custom welcome message bubble for mobile
+        setTimeout(() => {
+          if (messenger) {
+            // Create a custom welcome bubble outside the messenger
+            const welcomeBubble = document.createElement('div');
+            welcomeBubble.id = 'custom-welcome-bubble';
+            welcomeBubble.innerHTML = 'Hello! Welcome to TheoEats! 👋';
+            welcomeBubble.style.cssText = `
+              position: fixed;
+              bottom: 85px;
+              right: 20px;
+              background: #075E54;
+              color: white;
+              padding: 10px 15px;
+              border-radius: 15px 15px 5px 15px;
+              font-size: 14px;
+              font-family: 'Roboto', sans-serif;
+              max-width: 200px;
+              box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+              z-index: 1001;
+              animation: fadeInUp 0.5s ease;
+              cursor: pointer;
+            `;
+            
+            // Add animation
+            const keyframes = `
+              @keyframes fadeInUp {
+                from { opacity: 0; transform: translateY(10px); }
+                to { opacity: 1; transform: translateY(0); }
+              }
+            `;
+            const styleSheet = document.createElement('style');
+            styleSheet.textContent = keyframes;
+            document.head.appendChild(styleSheet);
+            
+            document.body.appendChild(welcomeBubble);
+            
+            // Hide bubble when clicked or after 8 seconds
+            welcomeBubble.addEventListener('click', () => {
+              welcomeBubble.style.display = 'none';
+              // Open the chatbot
+              messenger.click();
+            });
+            
+            setTimeout(() => {
+              if (welcomeBubble) {
+                welcomeBubble.style.opacity = '0';
+                setTimeout(() => welcomeBubble.remove(), 300);
+              }
+            }, 8000);
+          }
+        }, 2000);
+        
+        setTimeout(forceAttributes, 500);
+        setTimeout(overrideShadowDOM, 1000);
+        setTimeout(forceAttributes, 2000);
+        setTimeout(overrideShadowDOM, 3000);
+        
+        // Keep trying every 2 seconds
+        setInterval(() => {
+          forceAttributes();
+          overrideShadowDOM();
+        }, 2000);
+      }
+      
+      if (messenger) {
+        messenger.addEventListener("load", () => {
+          console.log("Chatbot loaded and visible.");
+        });
       }
     });
   </script>
