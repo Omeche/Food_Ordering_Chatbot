@@ -110,7 +110,7 @@
       border-radius: 50% !important;
     }
 
-    /* AGGRESSIVE Mobile Chat Overrides */
+    /* Mobile Chat Overrides */
     @media (max-width: 768px) {
       header { padding: 12px 15px; }
       header h1 { font-size: 1.3rem; }
@@ -125,7 +125,7 @@
       .card h3 { font-size: 1rem; }
       .card p { font-size: 0.9rem; }
 
-      /* FORCE TINY CHATBOT ON MOBILE */
+      /* CHATBOT ON MOBILE */
       df-messenger {
         bottom: 15px !important;
         right: 15px !important;
@@ -263,29 +263,55 @@
       grid.appendChild(div);
     });
 
-    // Save order updates in localStorage so cart.html can read
-    const messenger = document.querySelector('df-messenger');
-    messenger.addEventListener('df-response-received', function(event) {
-      const res = event.detail.response.queryResult;
-      if (!res) return;
-      const txt = res.fulfillmentText || "";
+  document.addEventListener("DOMContentLoaded", function () {
+  // Save order updates in localStorage so cart.html can read
+  const messenger = document.querySelector('df-messenger');
+  if (!messenger) return;
 
-      if (
-        txt.includes("Order updated") || txt.includes("Order cancelled") ||
-        txt.includes("Order completed") || txt.includes("Order placed") ||
-        txt.includes("Your Order ID")
-      ) {
-        const itemsMatch = txt.match(/Current items: (.+?)\. Total: ₦(\d+)/);
-        if (!itemsMatch) {
-          localStorage.setItem("order", JSON.stringify({ items: [], total: 0 }));
-          return;
-        }
-        const itemsStr = itemsMatch[1];
-        const total = itemsMatch[2];
-        const items = itemsStr.split(", ").map(x => x.trim());
+  messenger.addEventListener('df-response-received', function(event) {
+    const res = event.detail.response.queryResult;
+    if (!res) return;
+    const txt = res.fulfillmentText || "";
+
+    if (
+      txt.includes("Order updated") || txt.includes("Order cancelled") ||
+      txt.includes("Order completed") || txt.includes("Order placed") ||
+      txt.includes("Your Order ID") || txt.includes("Removed") || txt.includes("Updated order")
+    ) {
+      let itemsMatch = null;
+      let itemsStr = "";
+      let total = "0";
+
+      // Try different patterns
+      if (txt.includes("Current items:")) {
+        itemsMatch = txt.match(/Current items: (.+?)\. Total: ₦(\d+)/);
+      } else if (txt.includes("Updated order:")) {
+        itemsMatch = txt.match(/Updated order: (.+?)\. Total: ₦(\d+)/);
+      } else if (txt.includes("placed successfully")) {
+        // For placed orders: extract items from the list
+        const lines = txt.split('\n').filter(line => line.includes('(') && line.includes(')'));
+        itemsStr = lines.map(line => line.split(' -- ')[0].trim()).join(', ');
+        const totalMatch = txt.match(/Total: ₦(\d+)/);
+        total = totalMatch ? totalMatch[1] : "0";
+      }
+
+      if (itemsMatch) {
+        itemsStr = itemsMatch[1];
+        total = itemsMatch[2];
+      }
+
+      if (txt.includes("Order cancelled") || txt.includes("Your order is now empty")) {
+        // Clear cart for cancelled or empty orders
+        localStorage.setItem("order", JSON.stringify({ items: [], total: 0 }));
+      } else if (itemsStr) {
+        const items = itemsStr.split(", ").map(x => x.trim()).filter(x => x);
         localStorage.setItem("order", JSON.stringify({ items, total }));
       }
-    });
+      // If no itemsStr and not cancelled, do nothing (keep previous state)
+    }
+  });
+});
+
 
     // AGGRESSIVE mobile size override with multiple approaches
     document.addEventListener("DOMContentLoaded", function () {
@@ -294,7 +320,7 @@
       if (window.innerWidth <= 768) {
         const messenger = document.querySelector('df-messenger');
         
-        // Method 1: Direct style injection
+        // Direct style injection
         const injectStyles = () => {
           const style = document.createElement('style');
           style.innerHTML = `
@@ -315,7 +341,7 @@
           document.head.appendChild(style);
         };
         
-        // Method 2: Force attributes
+        // Force attributes
         const forceAttributes = () => {
           if (messenger) {
             messenger.setAttribute('style', 'width: 320px !important; height: 380px !important; transform: scale(0.9) !important; position: fixed !important; bottom: 10px !important; right: 10px !important;');
@@ -327,7 +353,7 @@
           }
         };
         
-        // Method 3: Shadow DOM override
+        // Shadow DOM override
         const overrideShadowDOM = () => {
           if (messenger && messenger.shadowRoot) {
             try {
