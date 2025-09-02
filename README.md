@@ -1,6 +1,6 @@
 # TheoEats Food Ordering Chatbot
 
-![Python](https://img.shields.io/badge/python-3.11-blue) ![Flask](https://img.shields.io/badge/flask-2.x-orange) ![MySQL](https://img.shields.io/badge/mysql-8.0-blue) ![Railway](https://img.shields.io/badge/deployed-railway-purple) ![License](https://img.shields.io/badge/license-Apache%202.0-green)
+![Python](https://img.shields.io/badge/python-3.9-blue) ![Flask](https://img.shields.io/badge/flask-3.x-orange) ![MySQL](https://img.shields.io/badge/mysql-8.0-blue) ![Railway](https://img.shields.io/badge/deployed-railway-purple) ![License](https://img.shields.io/badge/license-Apache%202.0-green)
 
 TheoEats is a modern **food ordering web application** powered by an intelligent **Dialogflow chatbot** for seamless order management. Users can browse the menu, interact with the chatbot to place orders, manage their cart, and track orders - all backed by a robust Flask backend and MySQL database.
 
