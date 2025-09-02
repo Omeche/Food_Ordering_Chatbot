@@ -516,8 +516,14 @@ def cancel_order(parameters: dict, session_id: str):
 @app.route('/api/order/<session_id>', methods=['GET'])
 def get_order(session_id):
     try:
-        order_id = get_or_create_order_id(session_id)
-        items = get_order_items(order_id)
+        # Get the active order for this session
+        order_id = db_handler.get_active_order(session_id, allowed_status=["Pending", "Placed"])
+        
+        if not order_id:
+            return jsonify({'items': [], 'total': 0})
+        
+        # Get order items from database
+        items = db_handler.fetch_order_items(order_id)
         
         return jsonify({
             'order_id': order_id,
@@ -531,6 +537,7 @@ def get_order(session_id):
             ]
         })
     except Exception as e:
+        logger.error(f"Error fetching order for session {session_id}: {e}")
         return jsonify({'error': str(e)}), 404
 
 if __name__ == '__main__':
