@@ -329,6 +329,7 @@
   </button>
 
   <script>
+    // Map names -> images 
     const menu = {
       "Jollof Rice": { price: 800, img: "Jollof-rice.jpg" },
       "Porridge Beans": { price: 700, img: "beans-porridge.jpg" },
@@ -342,60 +343,103 @@
     const cartDiv = document.getElementById("cart");
     const totalDiv = document.getElementById("cart-total");
     const checkoutBtn = document.getElementById("checkout-btn");
-    
-    const order = JSON.parse(localStorage.getItem("order")) || { items: [], total: 0 };
 
-    cartDiv.innerHTML = "";
-    if (order.items.length === 0) {
-      cartDiv.innerHTML = `
-        <div class="empty-cart">
-          <h3>Your cart is empty</h3>
-          <p>Add some items from the menu to get started!</p>
-        </div>
-      `;
-      checkoutBtn.disabled = true;
-      checkoutBtn.style.display = 'none';
-    } else {
-      checkoutBtn.disabled = false;
-      checkoutBtn.style.display = 'block';
-      
-      order.items.forEach(entry => {
-        const match = entry.match(/(.+)\((\d+)\)/); // e.g. Fish(2) or Beef(1)
-        if (!match) return;
-        const name = match[1].trim();
-        const qty = parseInt(match[2]);
-        const item = menu[name];
-        if (!item) return;
+    // Helper: format amounts
+    const formatNaira = (n) => `₦${Number(n).toLocaleString(undefined, { minimumFractionDigits: 0, maximumFractionDigits: 2 })}`;
 
-        const div = document.createElement("div");
-        div.classList.add("cart-item");
-        div.innerHTML = `
-          <img src="${item.img}" alt="${name}">
-          <div class="cart-info">
-            <h3>${name}</h3>
-            <p>Qty: ${qty}</p>
-          </div>
-          <div class="cart-price">₦${item.price * qty}</div>
-        `;
-        cartDiv.appendChild(div);
-      });
+    // Get session id (stored when chat starts) or from ?session_id=
+    function getSessionId() {
+      const stored = localStorage.getItem("session_id");
+      if (stored) return stored;
+      const params = new URLSearchParams(window.location.search);
+      const fromQuery = params.get("session_id");
+      if (fromQuery) {
+        localStorage.setItem("session_id", fromQuery);
+        return fromQuery;
+      }
+      return null;
     }
 
-    totalDiv.textContent = `Total: ₦${order.total}`;
-    
-    function proceedToCheckout() {
-      if (order.items.length === 0) {
-        alert("Your cart is empty!");
+    async function loadCart() {
+      const sessionId = getSessionId();
+
+      cartDiv.innerHTML = "";
+      totalDiv.textContent = "Total: ₦0";
+      checkoutBtn.disabled = true;
+      checkoutBtn.style.display = "none";
+
+      if (!sessionId) {
+        cartDiv.innerHTML = `
+          <div class="empty-cart">
+            <h3>No active session</h3>
+            <p>Start an order in the chat so we can fetch your cart. (Missing <code>session_id</code>.)</p>
+          </div>
+        `;
         return;
       }
-      
-      // Here you can add checkout logic
-      // For now, we'll show a simple alert
-      alert(`Proceeding to checkout with total: ₦${order.total}`);
-      
-      // You could redirect to a checkout page:
-      // window.location.href = "checkout.html";
+
+      try {
+        const res = await fetch(`/api/order/${encodeURIComponent(sessionId)}`, { credentials: "include" });
+        if (!res.ok) throw new Error("Failed to fetch cart from server");
+        const data = await res.json();
+
+        const items = Array.isArray(data.items) ? data.items : [];
+
+        if (items.length === 0) {
+          cartDiv.innerHTML = `
+            <div class="empty-cart">
+              <h3>Your cart is empty</h3>
+              <p>Add some items from the menu to get started!</p>
+            </div>
+          `;
+          return;
+        }
+
+        let grandTotal = 0;
+
+        items.forEach(it => {
+          const name = it.food_item || "Item";
+          const qty = Number(it.quantity) || 0;
+          // total_price comes back as a string (e.g. "3000.00")
+          const itemTotal = Number(it.total_price) || 0;
+          grandTotal += itemTotal;
+
+          const meta = menu[name] || {};
+          const imgSrc = meta.img || "placeholder.jpg";
+
+          const div = document.createElement("div");
+          div.classList.add("cart-item");
+          div.innerHTML = `
+            <img src="${imgSrc}" alt="${name}" onerror="this.src='placeholder.jpg'">
+            <div class="cart-info">
+              <h3>${name}</h3>
+              <p>Qty: ${qty}</p>
+            </div>
+            <div class="cart-price">${formatNaira(itemTotal)}</div>
+          `;
+          cartDiv.appendChild(div);
+        });
+
+        totalDiv.textContent = `Total: ${formatNaira(grandTotal)}`;
+        checkoutBtn.disabled = false;
+        checkoutBtn.style.display = "block";
+      } catch (e) {
+        console.error(e);
+        cartDiv.innerHTML = `
+          <div class="empty-cart">
+            <h3>Couldn’t load your cart</h3>
+            <p>Please refresh or try again later.</p>
+          </div>
+        `;
+      }
     }
+
+    function proceedToCheckout() {
+      // window.location.href = "checkout.html";
+      alert(totalDiv.textContent.replace("Total: ", "Proceeding to checkout with "));
+    }
+
+    document.addEventListener("DOMContentLoaded", loadCart);
   </script>
 </body>
 </html>
