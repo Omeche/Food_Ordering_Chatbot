@@ -1,9 +1,4 @@
-CREATE DATABASE IF NOT EXISTS theo_eat
-    DEFAULT CHARACTER SET utf8mb4
-    COLLATE utf8mb4_0900_ai_ci;
-
-USE theo_eat;
-
+-- Drop existing tables if they exist
 DROP TABLE IF EXISTS order_items;
 DROP TABLE IF EXISTS order_tracking;
 DROP TABLE IF EXISTS orders;
@@ -13,6 +8,9 @@ DROP TABLE IF EXISTS food_items;
 DROP FUNCTION IF EXISTS get_price_for_item;
 DROP FUNCTION IF EXISTS get_total_order_price;
 DROP PROCEDURE IF EXISTS insert_order_item;
+DROP PROCEDURE IF EXISTS remove_order_item;
+DROP PROCEDURE IF EXISTS clear_order;
+DROP PROCEDURE IF EXISTS get_or_create_order;
 
 -- Create food_items table
 CREATE TABLE food_items (
@@ -25,9 +23,9 @@ CREATE TABLE food_items (
     PRIMARY KEY (item_id),
     INDEX idx_food_name (name),
     INDEX idx_food_available (available)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Insert menu items 
+-- Insert menu items (FIXED: Added missing semicolon)
 INSERT INTO food_items (name, price) VALUES
 ('Jollof Rice', 800.00),
 ('Porridge Beans', 700.00),
@@ -35,8 +33,7 @@ INSERT INTO food_items (name, price) VALUES
 ('Fish', 1200.00),
 ('Beef', 1500.00),
 ('Fried Egg', 300.00),
-('White Rice', 700.00)
-
+('White Rice', 700.00);
 
 -- Create orders table 
 CREATE TABLE orders (
@@ -47,9 +44,9 @@ CREATE TABLE orders (
     PRIMARY KEY (order_id),
     INDEX idx_session_id (session_id),
     INDEX idx_created_at (created_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
--- Create order_tracking table\
+-- Create order_tracking table
 CREATE TABLE order_tracking (
     order_id INT NOT NULL,
     status ENUM('Pending', 'Placed', 'Preparing', 'Ready', 'Delivered', 'Cancelled') NOT NULL DEFAULT 'Pending',
@@ -59,15 +56,15 @@ CREATE TABLE order_tracking (
     FOREIGN KEY (order_id) REFERENCES orders(order_id) ON DELETE CASCADE,
     INDEX idx_status (status),
     INDEX idx_updated_at (updated_at)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Create order_items table 
 CREATE TABLE order_items (
     order_id INT NOT NULL,
     item_id INT NOT NULL,
     quantity INT NOT NULL DEFAULT 1,
-    unit_price DECIMAL(10,2) NOT NULL,
-    total_price DECIMAL(10,2) NOT NULL,
+    unit_price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
+    total_price DECIMAL(10,2) NOT NULL DEFAULT 0.00,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
     PRIMARY KEY (order_id, item_id),
@@ -78,7 +75,7 @@ CREATE TABLE order_items (
     CHECK (total_price >= 0),
     INDEX idx_order_items_order_id (order_id),
     INDEX idx_order_items_item_id (item_id)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- Create a view for easy order summaries
 CREATE VIEW order_summary AS
@@ -114,7 +111,7 @@ JOIN food_items f ON oi.item_id = f.item_id
 ORDER BY o.order_id, f.name;
 
 -- Get price by food item name 
-DELIMITER $$
+DELIMITER $
 CREATE FUNCTION get_price_for_item(p_item_name VARCHAR(255)) 
 RETURNS DECIMAL(10,2)
 READS SQL DATA
@@ -130,11 +127,11 @@ BEGIN
     LIMIT 1;
     
     RETURN v_price;
-END$$
+END$
 DELIMITER ;
 
 -- Get total price of an order
-DELIMITER $$
+DELIMITER $
 CREATE FUNCTION get_total_order_price(p_order_id INT) 
 RETURNS DECIMAL(10,2)
 READS SQL DATA
@@ -148,11 +145,11 @@ BEGIN
     WHERE order_id = p_order_id;
     
     RETURN v_total;
-END$$
+END$
 DELIMITER ;
 
 -- Insert or update order item
-DELIMITER $$
+DELIMITER $
 CREATE PROCEDURE insert_order_item(
     IN p_food_item VARCHAR(255),
     IN p_quantity INT,
@@ -162,7 +159,6 @@ BEGIN
     DECLARE v_item_id INT DEFAULT 0;
     DECLARE v_price DECIMAL(10,2) DEFAULT 0.00;
     DECLARE v_total_price DECIMAL(10,2) DEFAULT 0.00;
-    DECLARE v_error_msg VARCHAR(255) DEFAULT '';
     DECLARE EXIT HANDLER FOR SQLEXCEPTION
     BEGIN
         ROLLBACK;
@@ -211,11 +207,11 @@ BEGIN
     WHERE order_id = p_order_id;
     
     COMMIT;
-END$$
+END$
 DELIMITER ;
 
 -- Remove order item
-DELIMITER $$
+DELIMITER $
 CREATE PROCEDURE remove_order_item(
     IN p_order_id INT,
     IN p_food_item VARCHAR(255),
@@ -272,11 +268,11 @@ BEGIN
     WHERE order_id = p_order_id;
     
     COMMIT;
-END$$
+END$
 DELIMITER ;
 
 -- Clear entire order
-DELIMITER $$
+DELIMITER $
 CREATE PROCEDURE clear_order(
     IN p_order_id INT
 )
@@ -298,11 +294,11 @@ BEGIN
     WHERE order_id = p_order_id;
     
     COMMIT;
-END$$
+END$
 DELIMITER ;
 
 -- Get or create order for session
-DELIMITER $$
+DELIMITER $
 CREATE PROCEDURE get_or_create_order(
     IN p_session_id VARCHAR(255),
     OUT p_order_id INT
@@ -338,7 +334,7 @@ BEGIN
         
         COMMIT;
     END IF;
-END$$
+END$
 DELIMITER ;
 
 -- Create indexes for better performance
@@ -347,17 +343,17 @@ CREATE INDEX idx_order_tracking_status_updated ON order_tracking(status, updated
 CREATE INDEX idx_order_items_total_price ON order_items(total_price);
 
 -- Create trigger to automatically update total_price when unit_price or quantity changes
-DELIMITER $$
+DELIMITER $
 CREATE TRIGGER tr_order_items_update_total
     BEFORE UPDATE ON order_items
     FOR EACH ROW
 BEGIN
     SET NEW.total_price = NEW.unit_price * NEW.quantity;
-END$$
+END$
 DELIMITER ;
 
 -- Create trigger to automatically set unit_price and total_price on insert
-DELIMITER $$
+DELIMITER $
 CREATE TRIGGER tr_order_items_insert_price
     BEFORE INSERT ON order_items
     FOR EACH ROW
@@ -369,14 +365,8 @@ BEGIN
     END IF;
     
     SET NEW.total_price = NEW.unit_price * NEW.quantity;
-END$$
+END$
 DELIMITER ;
 
 -- Verify the database structure
 SELECT 'Database setup completed successfully!' as status;
-
--- Show table structures 
-DESCRIBE food_items;
-DESCRIBE orders;
-DESCRIBE order_tracking;
-DESCRIBE order_items;
