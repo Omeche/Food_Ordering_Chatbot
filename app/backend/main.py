@@ -4,6 +4,7 @@ import re
 import logging, os
 from decimal import Decimal
 from . import db_handler, function_handler
+from urllib.parse import urlparse
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
