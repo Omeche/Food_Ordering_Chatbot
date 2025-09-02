@@ -9,21 +9,42 @@ logger = logging.getLogger(__name__)
 
 # Connection 
 def get_connection():
+    # Get database connection 
     try:
-        # Switch automatically between local dev and Railway deployment
-        if os.environ.get("RAILWAY_ENV") == "production":
-            host = os.environ.get("MYSQLHOST")  
-            user = os.environ.get("MYSQLUSER")
+        # Check for Railway's MYSQL_URL 
+        mysql_url = os.environ.get("MYSQL_URL")
+        
+        if mysql_url:
+            # Parse Railway's MYSQL_URL format: mysql://user:password@host:port/database
+            from urllib.parse import urlparse
+            parsed = urlparse(mysql_url)
+            
+            host = parsed.hostname
+            user = parsed.username
+            password = parsed.password
+            database = parsed.path[1:]  # Remove leading slash
+            port = parsed.port or 3306
+            
+            logger.info(f"Using Railway MySQL URL connection to {host}:{port}")
+            
+        elif os.environ.get("RAILWAY_ENVIRONMENT"):
+            # Fallback to individual variables if they exist
+            host = os.environ.get("MYSQLHOST")
+            user = os.environ.get("MYSQLUSER") 
             password = os.environ.get("MYSQLPASSWORD")
             database = os.environ.get("MYSQLDATABASE")
             port = int(os.environ.get("MYSQLPORT", 3306))
+            
+            logger.info(f"Using Railway individual variables to {host}:{port}")
         else:
-            # Local dev - fix the syntax error
+            # Local dev
             host = "127.0.0.1"
             user = "root"
             password = "theo"
             database = "theo_eat"
             port = 3306
+            
+            logger.info(f"Using local development connection to {host}:{port}")
     
         return mysql.connector.connect(
             host=host,
@@ -39,8 +60,7 @@ def get_connection():
     except mysql.connector.Error as e:
         logger.error(f"Database connection error: {e}")
         raise
-
-
+        
 # Order Status 
 def get_order_status(order_id: int) -> Optional[str]:
     # Get the status of an order
