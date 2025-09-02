@@ -9,31 +9,309 @@
     body {
       margin: 0;
       font-family: 'Roboto', sans-serif;
-      background: #f9f9f9;
+      background: linear-gradient(135deg, #f8f9fa, #e9ecef);
       color: #333;
+      min-height: 100vh;
     }
+    
     header {
-      background: #128C7E;
+      background: linear-gradient(270deg, #25d366, #128C7E, #075E54);
+      background-size: 400% 400%;
+      animation: gradientFlow 10s ease infinite;
       color: white;
       padding: 15px 20px;
       display: flex;
       justify-content: space-between;
       align-items: center;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
     }
-    header a { color: white; text-decoration: none; font-weight: bold; }
-    h2 { text-align: center; margin: 20px 0; }
-    .cart-container { max-width: 900px; margin: auto; padding: 20px; }
+    
+    @keyframes gradientFlow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+    
+    header h1 { 
+      margin: 0; 
+      font-size: 1.5rem; 
+      font-weight: 700; 
+    }
+    
+    header a { 
+      color: white; 
+      text-decoration: none; 
+      font-weight: bold; 
+      transition: opacity 0.3s;
+      padding: 8px 16px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.1);
+    }
+    
+    header a:hover { 
+      opacity: 0.8; 
+      background: rgba(255,255,255,0.2);
+    }
+    
+    h2 { 
+      text-align: center; 
+      margin: 20px 0; 
+      color: #128C7E;
+      font-size: 1.8rem;
+    }
+    
+    .cart-container { 
+      max-width: 900px; 
+      margin: auto; 
+      padding: 20px; 
+    }
+    
     .cart-item {
-      display: flex; align-items: center; justify-content: space-between;
-      background: white; border-radius: 10px; margin-bottom: 15px;
-      padding: 10px 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between;
+      background: white; 
+      border-radius: 15px; 
+      margin-bottom: 15px;
+      padding: 15px; 
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      transition: transform 0.2s, box-shadow 0.2s;
     }
-    .cart-item img { width: 80px; height: 80px; border-radius: 8px; object-fit: cover; }
-    .cart-info { flex: 1; margin-left: 15px; }
-    .cart-info h3 { margin: 0; font-size: 1.1rem; }
-    .cart-info p { margin: 3px 0; }
-    .cart-price { font-weight: bold; color: #128C7E; }
-    .total { text-align: right; font-size: 1.3rem; font-weight: bold; margin-top: 20px; }
+    
+    .cart-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+    }
+    
+    .cart-item img { 
+      width: 80px; 
+      height: 80px; 
+      border-radius: 12px; 
+      object-fit: cover; 
+      flex-shrink: 0;
+    }
+    
+    .cart-info { 
+      flex: 1; 
+      margin-left: 15px; 
+    }
+    
+    .cart-info h3 { 
+      margin: 0; 
+      font-size: 1.1rem; 
+      color: #2d3436;
+    }
+    
+    .cart-info p { 
+      margin: 5px 0; 
+      color: #636e72;
+      font-size: 0.9rem;
+    }
+    
+    .cart-price { 
+      font-weight: bold; 
+      color: #128C7E; 
+      font-size: 1.1rem;
+      flex-shrink: 0;
+    }
+    
+    .total { 
+      text-align: center; 
+      font-size: 1.4rem; 
+      font-weight: bold; 
+      margin: 30px 0 20px 0; 
+      padding: 20px;
+      background: white;
+      border-radius: 15px;
+      color: #128C7E;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .checkout-btn {
+      display: block;
+      width: 100%;
+      max-width: 400px;
+      margin: 20px auto;
+      padding: 15px 30px;
+      background: linear-gradient(135deg, #25d366, #128C7E);
+      color: white;
+      text-decoration: none;
+      text-align: center;
+      border-radius: 25px;
+      font-weight: bold;
+      font-size: 1.1rem;
+      box-shadow: 0 4px 15px rgba(37, 211, 102, 0.3);
+      transition: all 0.3s ease;
+      border: none;
+      cursor: pointer;
+    }
+    
+    .checkout-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(37, 211, 102, 0.4);
+      background: linear-gradient(135deg, #128C7E, #25d366);
+    }
+    
+    .checkout-btn:disabled {
+      background: #ccc;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+    
+    .empty-cart {
+      text-align: center;
+      padding: 40px 20px;
+      color: #636e72;
+    }
+    
+    .empty-cart h3 {
+      color: #2d3436;
+      margin-bottom: 10px;
+    }
+
+    /* Mobile Responsiveness */
+    @media (max-width: 768px) {
+      header {
+        padding: 12px 15px;
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      header h1 { 
+        font-size: 1.3rem; 
+        margin-bottom: 8px;
+      }
+      
+      header a {
+        font-size: 0.9rem;
+        padding: 6px 12px;
+      }
+      
+      h2 { 
+        font-size: 1.5rem; 
+        margin: 15px 0;
+      }
+      
+      .cart-container { 
+        padding: 15px; 
+      }
+      
+      .cart-item {
+        padding: 12px;
+        flex-direction: row;
+        align-items: flex-start;
+      }
+      
+      .cart-item img { 
+        width: 70px; 
+        height: 70px; 
+      }
+      
+      .cart-info { 
+        margin-left: 12px; 
+      }
+      
+      .cart-info h3 { 
+        font-size: 1rem; 
+      }
+      
+      .cart-info p { 
+        font-size: 0.85rem; 
+      }
+      
+      .cart-price { 
+        font-size: 1rem; 
+      }
+      
+      .total { 
+        font-size: 1.2rem; 
+        margin: 20px 0;
+        padding: 15px;
+      }
+      
+      .checkout-btn {
+        padding: 12px 25px;
+        font-size: 1rem;
+        margin: 15px auto;
+      }
+    }
+
+    /* Small mobile devices */
+    @media (max-width: 480px) {
+      header h1 { 
+        font-size: 1.2rem; 
+      }
+      
+      header a {
+        font-size: 0.85rem;
+        padding: 5px 10px;
+      }
+      
+      .cart-container { 
+        padding: 10px; 
+      }
+      
+      .cart-item {
+        padding: 10px;
+        margin-bottom: 12px;
+      }
+      
+      .cart-item img { 
+        width: 60px; 
+        height: 60px; 
+      }
+      
+      .cart-info { 
+        margin-left: 10px; 
+      }
+      
+      .cart-info h3 { 
+        font-size: 0.95rem; 
+        line-height: 1.2;
+      }
+      
+      .cart-info p { 
+        font-size: 0.8rem; 
+      }
+      
+      .cart-price { 
+        font-size: 0.95rem; 
+      }
+      
+      .total { 
+        font-size: 1.1rem; 
+        margin: 15px 0;
+        padding: 12px;
+      }
+      
+      .checkout-btn {
+        padding: 10px 20px;
+        font-size: 0.95rem;
+        margin: 12px auto;
+      }
+    }
+
+    /* Very small screens */
+    @media (max-width: 320px) {
+      .cart-item {
+        flex-direction: column;
+        text-align: center;
+      }
+      
+      .cart-item img {
+        margin: 0 auto 10px;
+      }
+      
+      .cart-info {
+        margin-left: 0;
+        margin-bottom: 8px;
+      }
+      
+      .cart-price {
+        margin-top: 5px;
+      }
+    }
   </style>
 </head>
 <body>
@@ -45,10 +323,14 @@
   <h2>Order Summary</h2>
   <div class="cart-container" id="cart"></div>
   <p class="total" id="cart-total">Total: ₦0</p>
+  
+  <button class="checkout-btn" id="checkout-btn" onclick="proceedToCheckout()">
+    Proceed to Checkout
+  </button>
 
   <script>
     const menu = {
-      "Jollof Rice": { price: 800, img: "jollof-rice.jpg" },
+      "Jollof Rice": { price: 800, img: "Jollof-rice.jpg" },
       "Porridge Beans": { price: 700, img: "beans-porridge.jpg" },
       "Plantain": { price: 400, img: "plantain.jpg" },
       "Fish": { price: 1200, img: "fish.jpg" },
@@ -59,31 +341,61 @@
 
     const cartDiv = document.getElementById("cart");
     const totalDiv = document.getElementById("cart-total");
+    const checkoutBtn = document.getElementById("checkout-btn");
+    
     const order = JSON.parse(localStorage.getItem("order")) || { items: [], total: 0 };
 
     cartDiv.innerHTML = "";
-    order.items.forEach(entry => {
-      const match = entry.match(/(.+)\((\d+)\)/); // e.g. Fish(2)
-      if (!match) return;
-      const name = match[1].trim();
-      const qty = parseInt(match[2]);
-      const item = menu[name];
-      if (!item) return;
-
-      const div = document.createElement("div");
-      div.classList.add("cart-item");
-      div.innerHTML = `
-        <img src="${item.img}" alt="${name}">
-        <div class="cart-info">
-          <h3>${name}</h3>
-          <p>Qty: ${qty}</p>
+    if (order.items.length === 0) {
+      cartDiv.innerHTML = `
+        <div class="empty-cart">
+          <h3>Your cart is empty</h3>
+          <p>Add some items from the menu to get started!</p>
         </div>
-        <div class="cart-price">₦${item.price * qty}</div>
       `;
-      cartDiv.appendChild(div);
-    });
+      checkoutBtn.disabled = true;
+      checkoutBtn.style.display = 'none';
+    } else {
+      checkoutBtn.disabled = false;
+      checkoutBtn.style.display = 'block';
+      
+      order.items.forEach(entry => {
+        const match = entry.match(/(.+)\((\d+)\)/); // e.g. Fish(2) or Beef(1)
+        if (!match) return;
+        const name = match[1].trim();
+        const qty = parseInt(match[2]);
+        const item = menu[name];
+        if (!item) return;
+
+        const div = document.createElement("div");
+        div.classList.add("cart-item");
+        div.innerHTML = `
+          <img src="${item.img}" alt="${name}">
+          <div class="cart-info">
+            <h3>${name}</h3>
+            <p>Qty: ${qty}</p>
+          </div>
+          <div class="cart-price">₦${item.price * qty}</div>
+        `;
+        cartDiv.appendChild(div);
+      });
+    }
 
     totalDiv.textContent = `Total: ₦${order.total}`;
+    
+    function proceedToCheckout() {
+      if (order.items.length === 0) {
+        alert("Your cart is empty!");
+        return;
+      }
+      
+      // Here you can add checkout logic
+      // For now, we'll show a simple alert
+      alert(`Proceeding to checkout with total: ₦${order.total}`);
+      
+      // You could redirect to a checkout page:
+      // window.location.href = "checkout.html";
+    }
   </script>
 </body>
 </html>
