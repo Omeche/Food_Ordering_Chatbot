@@ -1,5 +1,5 @@
 ```markdown
-# TheoEats Food Ordering Chatbot
+TheoEats Food Ordering Chatbot
 
 ![Python](https://img.shields.io/badge/python-3.11-blue) ![Flask](https://img.shields.io/badge/flask-2.x-orange) ![License](https://img.shields.io/badge/license-MIT-green)
 
@@ -8,7 +8,7 @@ TheoEats is an end-to-end **food ordering web application** integrated with a **
 🔗 **Live Site:** [https://foodorderingchatbot-production.up.railway.app](https://foodorderingchatbot-production.up.railway.app)
 
 
-## Features
+Features
 
 - Interactive **Dialogflow chatbot** for ordering and order management.
 - Browse menu items with images and prices.
@@ -17,7 +17,7 @@ TheoEats is an end-to-end **food ordering web application** integrated with a **
 - Persistent sessions to track orders per user.
 
 
-## Tech Stack
+Tech Stack
 
 - **Frontend:** HTML, CSS, JavaScript  
 - **Backend:** Flask (Python)  
@@ -26,7 +26,7 @@ TheoEats is an end-to-end **food ordering web application** integrated with a **
 - **Deployment:** Railway  
 
 
-## Project Structure
+Project Structure
 
 ```
 
@@ -40,7 +40,7 @@ food-ordering\_chatbot/
 ├── frontend/
 │   ├── index.html
 │   ├── cart.html
-│   ├── \*.jpg (menu images)
+│   ├── \.jpg (menu images)
 ├── services/
 │   └── repair\_db.py
 ├── database/
@@ -53,7 +53,7 @@ food-ordering\_chatbot/
 
 ````
 
-## Setup & Deployment
+Setup & Deployment
 
 ### 1. Clone the repository
 ```bash
