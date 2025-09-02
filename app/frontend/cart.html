@@ -343,64 +343,45 @@
     const totalDiv = document.getElementById("cart-total");
     const checkoutBtn = document.getElementById("checkout-btn");
     
-    // Get order from localStorage
-    let order = JSON.parse(localStorage.getItem("order")) || { items: [], total: 0 };
+    const order = JSON.parse(localStorage.getItem("order")) || { items: [], total: 0 };
 
-    function displayCart() {
-      cartDiv.innerHTML = "";
+    cartDiv.innerHTML = "";
+    if (order.items.length === 0) {
+      cartDiv.innerHTML = `
+        <div class="empty-cart">
+          <h3>Your cart is empty</h3>
+          <p>Add some items from the menu to get started!</p>
+        </div>
+      `;
+      checkoutBtn.disabled = true;
+      checkoutBtn.style.display = 'none';
+    } else {
+      checkoutBtn.disabled = false;
+      checkoutBtn.style.display = 'block';
       
-      if (order.items.length === 0) {
-        cartDiv.innerHTML = `
-          <div class="empty-cart">
-            <h3>Your cart is empty</h3>
-            <p>Add some items from the menu to get started!</p>
+      order.items.forEach(entry => {
+        const match = entry.match(/(.+)\((\d+)\)/); // e.g. Fish(2) or Beef(1)
+        if (!match) return;
+        const name = match[1].trim();
+        const qty = parseInt(match[2]);
+        const item = menu[name];
+        if (!item) return;
+
+        const div = document.createElement("div");
+        div.classList.add("cart-item");
+        div.innerHTML = `
+          <img src="${item.img}" alt="${name}">
+          <div class="cart-info">
+            <h3>${name}</h3>
+            <p>Qty: ${qty}</p>
           </div>
+          <div class="cart-price">₦${item.price * qty}</div>
         `;
-        checkoutBtn.disabled = true;
-        checkoutBtn.style.display = 'none';
-      } else {
-        checkoutBtn.disabled = false;
-        checkoutBtn.style.display = 'block';
-        
-        // Parse items more carefully to handle quantity changes
-        const itemCounts = {};
-        
-        // Count quantities for each item
-        order.items.forEach(entry => {
-          const match = entry.match(/(.+?)\s*\((\d+)\)$/);
-          if (match) {
-            const name = match[1].trim();
-            const qty = parseInt(match[2]);
-            
-            if (itemCounts[name]) {
-              itemCounts[name] += qty;
-            } else {
-              itemCounts[name] = qty;
-            }
-          }
-        });
-        
-        // Display each unique item with its total quantity
-        Object.entries(itemCounts).forEach(([name, totalQty]) => {
-          const item = menu[name];
-          if (!item) return;
-
-          const div = document.createElement("div");
-          div.classList.add("cart-item");
-          div.innerHTML = `
-            <img src="${item.img}" alt="${name}">
-            <div class="cart-info">
-              <h3>${name}</h3>
-              <p>Qty: ${totalQty}</p>
-            </div>
-            <div class="cart-price">₦${item.price * totalQty}</div>
-          `;
-          cartDiv.appendChild(div);
-        });
-      }
-
-      totalDiv.textContent = `Total: ₦${order.total}`;
+        cartDiv.appendChild(div);
+      });
     }
+
+    totalDiv.textContent = `Total: ₦${order.total}`;
     
     function proceedToCheckout() {
       if (order.items.length === 0) {
@@ -415,17 +396,6 @@
       // You could redirect to a checkout page:
       // window.location.href = "checkout.html";
     }
-
-    // Load and display cart on page load
-    displayCart();
-    
-    // Listen for storage changes (when cart is updated from other pages)
-    window.addEventListener('storage', function(e) {
-      if (e.key === 'order') {
-        order = JSON.parse(e.newValue) || { items: [], total: 0 };
-        displayCart();
-      }
-    });
   </script>
 </body>
 </html>
